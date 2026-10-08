@@ -143,7 +143,7 @@ export default function ChatWhatsApp({ dlgRef, enviarLead }) {
   return (
     <dialog className="wa" ref={dlgRef} aria-label="Conversa no WhatsApp com a Dra. Danielle Hassene" onClick={e => e.target === dlgRef.current && dlgRef.current.close()}>
       <header className="wa__top">
-        <img src="/images/v4/dra-recorte.png" alt="" width="40" height="40" />
+        <img src="/images/dra-avatar.webp" alt="" width="40" height="40" />
         <div><b>Dra. Danielle Hassene</b><span>{typing ? 'digitando…' : 'online'}</span></div>
         <button type="button" aria-label="Fechar conversa" onClick={() => dlgRef.current.close()}>×</button>
       </header>

@@ -1,0 +1,4 @@
+# fontes versionadas pelo nome do arquivo: cache de 1 ano
+<IfModule mod_headers.c>
+  Header set Cache-Control "public, max-age=31536000, immutable"
+</IfModule>

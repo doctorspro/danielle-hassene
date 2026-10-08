@@ -77,7 +77,7 @@ export default function App() {
 
     // nav flutuante: aparece depois que o topo do hero sai de cena
     const fn = document.getElementById('floatnav');
-    const onScroll = () => { const v = scrollY > 480; fn.classList.toggle('is-visible', v); fn.setAttribute('aria-hidden', String(!v)); };
+    const onScroll = () => { const v = scrollY > 480; fn.classList.toggle('is-visible', v); fn.inert = !v; };
     addEventListener('scroll', onScroll, { passive: true }); onScroll();
     cleanups.push(() => removeEventListener('scroll', onScroll));
 
@@ -117,8 +117,8 @@ export default function App() {
   return (
     <>
 {/* Nav flutuante (aparece ao rolar) */}
-<div className="floatnav" id="floatnav" aria-hidden="true">
-  <a className="brand" href="#topo"><img src="/images/daniellehassene.com.br/c4dfa7d21a1d6589.png" alt="" width="38" height="38" /><span>Dra. Danielle Hassene</span></a>
+<div className="floatnav" id="floatnav">
+  <a className="brand" href="#topo"><img src="/images/logo-dh-nav.webp" alt="" width="38" height="38" /><span>Dra. Danielle Hassene</span></a>
   <nav className="links" aria-label="Seções">
     <a href="#atendimentos">Atendimentos</a><a href="#sobre">Sobre</a><a href="#trajetoria">Trajetória</a><a href="#consultorio">Consultório</a><a href="#duvidas">Dúvidas</a>
   </nav>
@@ -129,7 +129,7 @@ export default function App() {
   <div className="hero__bg" role="img" aria-label="Dra. Danielle Hassene, psiquiatra, em seu consultório na Barra da Tijuca"></div>
 
   <div className="topbar">
-    <a href="#topo" aria-label="Início"><img className="topbar__logo" src="/images/daniellehassene.com.br/3eb4ff37b7f6ad7c.png" alt="Logotipo Dra. Danielle Hassene" width="48" height="48" /></a>
+    <a href="#topo" aria-label="Início"><img className="topbar__logo" src="/images/logo-dh.webp" alt="Logotipo Dra. Danielle Hassene" width="48" height="48" /></a>
     <nav aria-label="Principal">
       <a href="#atendimentos">Atendimentos</a><a href="#sobre">Sobre</a><a href="#trajetoria">Trajetória</a><a href="#consultorio">Consultório</a><a href="#duvidas">Dúvidas</a>
     </nav>
@@ -187,8 +187,8 @@ export default function App() {
 <section className="sobre reveal" id="sobre" aria-labelledby="sobre-t">
   <div className="collage">
     <div className="collage__circle" aria-hidden="true"></div>
-    <img className="collage__photo" src="/images/daniellehassene.com.br/b18998e7b8a153ab.jpg" alt="Dra. Danielle Hassene sentada em seu consultório" width="400" height="560" />
-    <img className="collage__room" src="/images/consultorio/diva.jpg" alt="Sala de atendimento com divã branco, poltrona e luminária" width="230" height="260" loading="lazy" />
+    <img className="collage__photo" src="/images/dra-consultorio.webp" alt="Dra. Danielle Hassene sentada em seu consultório" width="400" height="560" />
+    <img className="collage__room" src="/images/consultorio/diva.webp" alt="Sala de atendimento com divã branco, poltrona e luminária" width="230" height="260" loading="lazy" />
   </div>
   <div className="sobre__text">
     <span className="eyebrow">Sobre a Dra. Danielle</span>
@@ -230,7 +230,7 @@ export default function App() {
       <span className="gbadge" aria-hidden="true"><GLogo /></span>
       <strong>5,0</strong>
       <div>
-        <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
+        <div className="stars" role="img" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
         <small>7 avaliações no Google</small>
       </div>
     </div>
@@ -243,7 +243,7 @@ export default function App() {
         <div className="review__author"><b>Mozeila</b><span>há 3 anos</span></div>
         <span className="gbadge gbadge--sm" aria-hidden="true"><GLogo /></span>
       </div>
-      <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
+      <div className="stars" role="img" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
       <p>Dra Danielle é pra mim mais que uma Psiquiatra, a considero uma amiga em que posso confiar meus sentimentos, angústias e dúvidas. Paciente e preocupada em não só prescrever medicação mas procura entender a história de vida do seu paciente, infelizmente é coisa rara nós consultórios médicos. Uma pessoa acima de tudo humana. Meu muito obrigado!</p>
     </article>
     <article className="review">
@@ -252,7 +252,7 @@ export default function App() {
         <div className="review__author"><b>Morany Edwiges Sabino S. Bráz</b><span>há 3 anos</span></div>
         <span className="gbadge gbadge--sm" aria-hidden="true"><GLogo /></span>
       </div>
-      <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
+      <div className="stars" role="img" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
       <p>Dra Danielle é uma profissional de ouro! Eu fiz o agendamento a distância com intuito de ajudar um amigo com dificuldades e ele recebeu todo o acolhimento. A Doutora via mensagem entrou em contato comigo, sempre mantendo uma excelente comunicação e preocupação genuína. Eu recomendo a todos e todas que necessitem de uma profissional competente, qualificada e sobre tudo humana…</p>
     </article>
     <article className="review">
@@ -261,7 +261,7 @@ export default function App() {
         <div className="review__author"><b>Ana Paula R.</b><span>há 8 meses</span></div>
         <span className="gbadge gbadge--sm" aria-hidden="true"><GLogo /></span>
       </div>
-      <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
+      <div className="stars" role="img" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
       <p>Cheguei à Dra. Danielle depois de meses com insônia e ansiedade. Desde a primeira consulta me senti ouvida de verdade. Ela explica cada etapa do tratamento, sem pressa, e hoje durmo e vivo com muito mais tranquilidade.</p>
     </article>
     <article className="review">
@@ -270,7 +270,7 @@ export default function App() {
         <div className="review__author"><b>Carlos Eduardo M.</b><span>há 1 ano</span></div>
         <span className="gbadge gbadge--sm" aria-hidden="true"><GLogo /></span>
       </div>
-      <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
+      <div className="stars" role="img" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
       <p>Profissional extremamente competente e humana. Faço teleconsulta de outra cidade e o atendimento é tão cuidadoso quanto o presencial. Retornos pontuais, orientações claras. Recomendo sem reservas.</p>
     </article>
     <article className="review">
@@ -279,7 +279,7 @@ export default function App() {
         <div className="review__author"><b>Fernanda L.</b><span>há 5 meses</span></div>
         <span className="gbadge gbadge--sm" aria-hidden="true"><GLogo /></span>
       </div>
-      <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
+      <div className="stars" role="img" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
       <p>Levei meu pai, que resistia muito à ideia de procurar um psiquiatra. A Dra. Danielle o acolheu com uma delicadeza que mudou a visão dele sobre o tratamento. Hoje ele está muito melhor e vai às consultas por vontade própria.</p>
     </article>
     <article className="review">
@@ -288,7 +288,7 @@ export default function App() {
         <div className="review__author"><b>Ricardo S.</b><span>há 2 anos</span></div>
         <span className="gbadge gbadge--sm" aria-hidden="true"><GLogo /></span>
       </div>
-      <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
+      <div className="stars" role="img" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
       <p>Consultório silencioso e acolhedor, pontualidade e uma médica que realmente escuta. O tratamento para TDAH finalmente fez diferença na minha rotina de trabalho e nos meus relacionamentos.</p>
     </article>
     <article className="review">
@@ -297,7 +297,7 @@ export default function App() {
         <div className="review__author"><b>Juliana T.</b><span>há 1 ano</span></div>
         <span className="gbadge gbadge--sm" aria-hidden="true"><GLogo /></span>
       </div>
-      <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
+      <div className="stars" role="img" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
       <p>Pela primeira vez um médico se interessou pela minha história, não só pelos sintomas. Trabalho sério, ético e baseado em ciência, com um cuidado humano que faz toda a diferença. Sou muito grata.</p>
     </article>
   </div>
@@ -312,11 +312,11 @@ export default function App() {
 
 <section className="consult reveal" id="consultorio" aria-labelledby="consult-t">
 <div className="canvas">
-  <img className="consult__pano" src="/images/consultorio/recepcao.jpg" alt="Recepção do consultório, com aparador branco, quadro e poltronas" width="1200" height="460" loading="lazy" />
+  <img className="consult__pano" src="/images/consultorio/recepcao.webp" alt="Recepção do consultório, com aparador branco, quadro e poltronas" width="1200" height="460" loading="lazy" />
   <div className="consult__detail" id="consult-slides">
-    <img className="is-on" src="/images/consultorio/aparador.jpg" alt="Aparador da recepção com flores, revistas e álcool em gel" width="320" height="340" loading="lazy" />
-    <img src="/images/consultorio/diva.jpg" alt="Sala de atendimento com divã branco e poltrona" width="320" height="340" loading="lazy" />
-    <img src="/images/consultorio/recepcao.jpg" alt="Recepção com quadro, aparador e poltronas" width="320" height="340" loading="lazy" />
+    <img className="is-on" src="/images/consultorio/aparador.webp" alt="Aparador da recepção com flores, revistas e álcool em gel" width="320" height="340" loading="lazy" />
+    <img src="/images/consultorio/diva.webp" alt="Sala de atendimento com divã branco e poltrona" width="320" height="340" loading="lazy" />
+    <img src="/images/consultorio/recepcao.webp" alt="Recepção com quadro, aparador e poltronas" width="320" height="340" loading="lazy" />
   </div>
   <div className="consult__card">
     <h2 id="consult-t">Um consultório na Barra da Tijuca feito para respirar.</h2>
@@ -386,7 +386,7 @@ export default function App() {
 <footer className="footer">
   <div className="footer__canvas">
     <div className="brand">
-      <img src="/images/daniellehassene.com.br/3eb4ff37b7f6ad7c.png" alt="" width="48" height="48" />
+      <img src="/images/logo-dh.webp" alt="" width="48" height="48" />
       <div><b>Dra. Danielle Hassene</b><span>CRM 5259505-5 · RQE 40676 e 40677</span></div>
     </div>
     <address><strong>Psiquiatra na Barra da Tijuca, Rio de Janeiro</strong><br />Shopping Downtown · Av. das Américas, 500, bloco 8, portaria F, sala 210 · Barra da Tijuca, Rio de Janeiro, RJ</address>
@@ -394,7 +394,7 @@ export default function App() {
     <a className="footer__dp" href="https://doctorspro.com.br/?utm_medium=referral&utm_campaign=rodape-site-cliente&utm_content=dra-danielle-hassene" target="_blank" rel="noopener"
       onPointerDown={e => { e.currentTarget.href = linkDoctorsPro(); }} onFocus={e => { e.currentTarget.href = linkDoctorsPro(); }}>
       <span>Desenvolvido por</span>
-      <img src="/images/doctorspro.png" alt="Doctors Pro, agência de marketing médico" width="160" height="26" loading="lazy" />
+      <img src="/images/doctorspro.webp" alt="Doctors Pro, agência de marketing médico" width="160" height="26" loading="lazy" />
     </a>
   </div>
 </footer>

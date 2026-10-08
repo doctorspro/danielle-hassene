@@ -1,0 +1,4 @@
+# imagens sem hash no nome: cache de 30 dias
+<IfModule mod_headers.c>
+  Header set Cache-Control "public, max-age=2592000"
+</IfModule>
