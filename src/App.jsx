@@ -398,7 +398,7 @@ export default function App() {
     </a>
   </div>
 </footer>
-<img className="fim__figura" src="/images/v4/dra-recorte.png" alt="Dra. Danielle Hassene de jaleco, braços cruzados, sorrindo" width="520" height="640" />
+<img className="fim__figura" src="/images/v4/dra-rodape.webp" alt="Dra. Danielle Hassene de jaleco, braços cruzados, sorrindo" width="353" height="640" loading="lazy" />
 </div>
 
 <dialog className="modal" ref={dlg} aria-labelledby="modal-t" onClick={e => e.target === dlg.current && dlg.current.close()}>
