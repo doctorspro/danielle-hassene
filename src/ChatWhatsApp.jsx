@@ -1,16 +1,31 @@
 import { useEffect, useRef, useState } from 'react';
 
+const WHATSAPP_DRA = '552124924187';
+
+// mensagem pronta para a pessoa iniciar a conversa com a Dra. no WhatsApp
+export function linkWhatsApp(d) {
+  const tipo = d.tipo_consulta === 'online' ? 'online' : 'presencial';
+  const texto = `Olá, Dra. Danielle! Sou ${d.nome} e acabei de preencher o formulário no site. Gostaria de agendar uma consulta ${tipo}.\n\nO que estou buscando: ${d.mensagem}`;
+  return `https://wa.me/${WHATSAPP_DRA}?text=${encodeURIComponent(texto)}`;
+}
+
+const primeiro = d => d.nome.split(' ')[0];
+
 const STEPS = [
-  { key: 'nome', ask: () => 'Para começar, qual é o seu nome?', type: 'text', ac: 'name', ph: 'Seu nome',
-    valid: v => v.length >= 2, err: 'Pode me dizer seu nome?' },
-  { key: 'telefone', ask: d => `Prazer, ${d.nome.split(' ')[0]}! Qual é o seu WhatsApp com DDD?`, type: 'tel', ac: 'tel', ph: '(21) 99999-9999',
-    valid: v => v.replace(/\D/g, '').length >= 10, err: 'Esse número parece incompleto. Pode enviar com o DDD?' },
-  { key: 'data_nascimento', ask: () => 'Qual é a sua data de nascimento?', type: 'text', ac: 'bday', ph: 'DD/MM/AAAA', mode: 'numeric',
-    parse: nascimento, err: 'Não entendi a data. Pode enviar no formato DD/MM/AAAA?' },
-  { key: 'email', ask: () => 'E qual é o seu e-mail? Se preferir, pode pular.', type: 'email', ac: 'email', ph: 'seu@email.com', skip: true,
-    valid: v => /^\S+@\S+\.\S+$/.test(v), err: 'Esse e-mail parece incorreto. Pode conferir?' },
-  { key: 'tipo_consulta', ask: () => 'Você prefere consulta presencial na Barra da Tijuca ou online?',
+  { key: 'nome', ask: () => 'Para começar, qual é o seu nome completo?', type: 'text', ac: 'name', ph: 'Nome e sobrenome', max: 80,
+    valid: nomeValido, err: 'Preciso do seu nome e sobrenome, só com letras. Pode enviar de novo?' },
+  { key: 'telefone', ask: d => `Prazer, ${primeiro(d)}! Qual é o seu WhatsApp com DDD? É por ele que vamos confirmar seu horário.`,
+    type: 'tel', ac: 'tel', ph: '(21) 99999-9999', mask: mascaraTel,
+    valid: v => /^\(\d{2}\) 9\d{4}-\d{4}$/.test(v), err: 'Esse número parece incompleto. Pode enviar o celular com DDD?' },
+  { key: 'data_nascimento', ask: () => 'Qual é a sua data de nascimento?', type: 'text', ac: 'bday', ph: 'DD/MM/AAAA', mode: 'numeric', mask: mascaraData,
+    parse: nascimento, err: 'Não reconheci essa data. Pode enviar no formato DD/MM/AAAA?' },
+  { key: 'email', ask: () => 'Qual é o seu melhor e-mail?', type: 'email', ac: 'email', ph: 'seu@email.com', max: 120,
+    valid: emailValido, err: 'Esse e-mail parece incorreto. Pode conferir?' },
+  { key: 'tipo_consulta', ask: () => 'Você prefere consulta presencial, na Barra da Tijuca, ou online?',
     options: [['Presencial', 'presencial'], ['Online', 'online']] },
+  { key: 'mensagem', ask: () => 'Para finalizar, conte-me um pouco do que está buscando. Pode escrever do seu jeito, sem pressa.',
+    type: 'text', ph: 'Escreva aqui…', max: 1000,
+    valid: v => v.length >= 10, err: 'Pode me contar um pouco mais? Isso me ajuda a preparar o seu atendimento.' },
 ];
 
 // "23/04/1985" → "1985-04-23"; null se a data não existir ou estiver fora do intervalo
@@ -19,8 +34,32 @@ function nascimento(v) {
   if (!m) return null;
   const [, d, mes, a] = m.map(Number);
   const dt = new Date(Date.UTC(a, mes - 1, d));
-  if (dt.getUTCDate() !== d || dt.getUTCMonth() !== mes - 1 || a < 1900 || dt > new Date()) return null;
+  if (dt.getUTCDate() !== d || dt.getUTCMonth() !== mes - 1 || dt > new Date() || new Date().getUTCFullYear() - a > 110) return null;
   return dt.toISOString().slice(0, 10);
+}
+
+// nome e sobrenome: só letras (com acento), apóstrofo ou hífen; primeiro e último com 2+ letras
+export function nomeValido(v) {
+  const p = v.trim().split(/\s+/);
+  return p.length >= 2 && p.every(x => /^\p{L}[\p{L}'’-]*$/u.test(x)) && p[0].length >= 2 && p.at(-1).length >= 2;
+}
+
+export function emailValido(v) {
+  return /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[a-z]{2,}$/i.test(v.trim());
+}
+
+// DD/MM/AAAA, só dígitos
+export function mascaraData(v) {
+  const d = v.replace(/\D/g, '').slice(0, 8);
+  return [d.slice(0, 2), d.slice(2, 4), d.slice(4)].filter(Boolean).join('/');
+}
+
+// celular BR: (21) 99999-8888, no máximo 11 dígitos
+export function mascaraTel(v) {
+  const d = v.replace(/\D/g, '').slice(0, 11);
+  if (d.length <= 2) return d.length ? `(${d}` : '';
+  if (d.length <= 7) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
 }
 
 const hora = () => new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -35,6 +74,7 @@ export default function ChatWhatsApp({ dlgRef, enviarLead }) {
   const [step, setStep] = useState(-1); // -1 abertura · STEPS.length enviando/fim
   const [typing, setTyping] = useState(false);
   const [falhou, setFalhou] = useState(false);
+  const [wa, setWa] = useState(null); // link final para o WhatsApp da Dra.
   const [valor, setValor] = useState('');
   const dados = useRef({});
   const run = useRef(0); // invalida conversas antigas ao reabrir
@@ -55,7 +95,12 @@ export default function ChatWhatsApp({ dlgRef, enviarLead }) {
     setStep(STEPS.length); setFalhou(false);
     try {
       await enviarLead(dados.current);
-      await bot(`Perfeito, ${dados.current.nome.split(' ')[0]}! Recebi suas informações. Em breve nossa equipe entra em contato pelo WhatsApp para confirmar o melhor horário.`, id);
+      if (!(await bot(`Obrigada, ${primeiro(dados.current)}! Recebi suas informações.`, id))) return;
+      if (!(await bot('Agora vou te levar para o meu WhatsApp, com uma mensagem pronta. É só tocar em enviar para iniciarmos o seu atendimento.', id))) return;
+      const link = linkWhatsApp(dados.current);
+      setWa(link);
+      await espera(2500);
+      if (id === run.current) location.assign(link);
     } catch {
       if (await bot('Não consegui enviar suas informações agora. Verifique sua conexão e toque em "Tentar novamente".', id)) setFalhou(true);
     }
@@ -63,9 +108,9 @@ export default function ChatWhatsApp({ dlgRef, enviarLead }) {
 
   const iniciar = async () => {
     const id = ++run.current;
-    dados.current = {}; setMsgs([]); setStep(-1); setValor(''); setFalhou(false);
-    if (!(await bot('Olá! Sou a Dra. Danielle Hassene.', id))) return;
-    if (!(await bot('Para dar sequência ao seu atendimento, preciso de algumas informações.', id))) return;
+    dados.current = {}; setMsgs([]); setStep(-1); setValor(''); setFalhou(false); setWa(null);
+    if (!(await bot('Olá! Sou a Dra. Danielle Hassene. Que bom ter você por aqui.', id))) return;
+    if (!(await bot('Para dar sequência ao seu atendimento, preciso de algumas informações. Leva só um minutinho.', id))) return;
     perguntar(0, id);
   };
 
@@ -73,8 +118,8 @@ export default function ChatWhatsApp({ dlgRef, enviarLead }) {
     const s = STEPS[step];
     setMsgs(m => [...m, { de: 'eu', texto, hora: hora() }]);
     setValor('');
-    const v = s.parse && guardado ? s.parse(guardado) : guardado;
-    if (v === null || (s.valid && v && !s.valid(v))) { bot(s.err, run.current); return; }
+    const v = s.parse ? s.parse(guardado) : guardado;
+    if (v === null || (s.valid && !s.valid(v))) { bot(s.err, run.current); return; }
     dados.current[s.key] = v;
     setStep(-1);
     perguntar(step + 1, run.current);
@@ -109,12 +154,12 @@ export default function ChatWhatsApp({ dlgRef, enviarLead }) {
         ))}
         {typing && <div className="wa__msg wa__msg--bot wa__dots" aria-label="digitando"><span /><span /><span /></div>}
         {!typing && s?.options && <div className="wa__opts">{s.options.map(([rotulo, v]) => <button type="button" key={v} onClick={() => responder(rotulo, v)}>{rotulo}</button>)}</div>}
-        {!typing && s?.skip && <div className="wa__opts"><button type="button" onClick={() => responder('Prefiro pular', '')}>Pular</button></div>}
         {!typing && falhou && <div className="wa__opts"><button type="button" onClick={() => perguntar(STEPS.length, run.current)}>Tentar novamente</button></div>}
+        {!typing && wa && <div className="wa__opts"><a className="wa__go" href={wa}>Abrir WhatsApp da Dra.</a></div>}
         <div ref={fim} />
       </div>
       <form className="wa__bar" onSubmit={enviar}>
-        <input ref={campo} type={s?.type || 'text'} autoComplete={s?.ac} inputMode={s?.mode} value={valor} onChange={e => setValor(e.target.value)}
+        <input ref={campo} type={s?.type || 'text'} autoComplete={s?.ac} inputMode={s?.mode} maxLength={s?.max} value={valor} onChange={e => setValor((s?.mask || (x => x))(e.target.value))}
           placeholder={s?.type ? s.ph : 'Mensagem'} disabled={!s?.type || typing} aria-label="Sua resposta" />
         <button type="submit" aria-label="Enviar" disabled={!s?.type || typing || !valor.trim()}>
           <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2z" /></svg>

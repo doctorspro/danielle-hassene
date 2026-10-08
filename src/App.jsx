@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { Activity, ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, CloudRain, ExternalLink, FlaskConical, Focus, HeartHandshake, Leaf, MapPin, MessageCircle, MessagesSquare, Minus, Moon, MoonStar, Plus, Repeat, ShieldCheck, Sparkles, Star, Video, Wind, X } from 'lucide-react';
-import ChatWhatsApp, { WaIcon } from './ChatWhatsApp.jsx';
+import { Activity, ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, CloudRain, FlaskConical, Focus, HeartHandshake, Leaf, MapPin, MessageCircle, MessagesSquare, Minus, Moon, MoonStar, Plus, Repeat, ShieldCheck, Sparkles, Star, Video, Wind, X } from 'lucide-react';
+import ChatWhatsApp, { WaIcon, mascaraTel, nomeValido, emailValido } from './ChatWhatsApp.jsx';
 import './styles.css';
 
-const ICONS = { 'activity': Activity, 'arrow-right': ArrowRight, 'arrow-up-right': ArrowUpRight, 'chevron-left': ChevronLeft, 'chevron-right': ChevronRight, 'cloud-rain': CloudRain, 'external-link': ExternalLink, 'flask-conical': FlaskConical, 'focus': Focus, 'heart-handshake': HeartHandshake, 'leaf': Leaf, 'map-pin': MapPin, 'message-circle': MessageCircle, 'messages-square': MessagesSquare, 'minus': Minus, 'moon': Moon, 'moon-star': MoonStar, 'plus': Plus, 'repeat': Repeat, 'shield-check': ShieldCheck, 'sparkles': Sparkles, 'star': Star, 'video': Video, 'wind': Wind, 'x': X };
+const ICONS = { 'activity': Activity, 'arrow-right': ArrowRight, 'arrow-up-right': ArrowUpRight, 'chevron-left': ChevronLeft, 'chevron-right': ChevronRight, 'cloud-rain': CloudRain, 'flask-conical': FlaskConical, 'focus': Focus, 'heart-handshake': HeartHandshake, 'leaf': Leaf, 'map-pin': MapPin, 'message-circle': MessageCircle, 'messages-square': MessagesSquare, 'minus': Minus, 'moon': Moon, 'moon-star': MoonStar, 'plus': Plus, 'repeat': Repeat, 'shield-check': ShieldCheck, 'sparkles': Sparkles, 'star': Star, 'video': Video, 'wind': Wind, 'x': X };
 
 // Ícone Lucide por nome kebab-case (ex.: "arrow-right")
 function I({ n, className }) {
@@ -31,10 +31,15 @@ function lerTracking() {
 
 // ponytail: webhook sem CORS → no-cors (resposta opaca, só falha de rede é detectada)
 async function enviarLead(dados) {
-  const body = new URLSearchParams({ ...dados, telefone: dados.telefone.replace(/\D/g, '') });
+  const limpo = Object.fromEntries(Object.entries(dados).map(([k, v]) => [k, String(v).trim().replace(/\s+/g, ' ')]));
+  const body = new URLSearchParams({ ...limpo, telefone: limpo.telefone.replace(/\D/g, '') });
   Object.entries(lerTracking()).forEach(([k, v]) => body.set(k, v));
   await fetch(WEBHOOK, { method: 'POST', mode: 'no-cors', body });
 }
+
+const GLogo = () => (
+  <svg viewBox="0 0 48 48"><path fill="#4285F4" d="M45.1 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h11.8c-.5 2.8-2.1 5.1-4.4 6.7v5.5h7.1c4.2-3.8 6.6-9.5 6.6-16.2z"/><path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.3l-7.1-5.5c-2 1.3-4.5 2.1-7.4 2.1-5.7 0-10.5-3.8-12.2-9H4.5v5.7C8.1 41.1 15.5 46 24 46z"/><path fill="#FBBC05" d="M11.8 28.3c-.4-1.3-.7-2.8-.7-4.3s.3-3 .7-4.3V14H4.5C3 17 2 20.4 2 24s1 7 2.5 10l7.3-5.7z"/><path fill="#EA4335" d="M24 10.7c3.2 0 6.1 1.1 8.4 3.3l6.3-6.3C34.9 4.2 29.9 2 24 2 15.5 2 8.1 6.9 4.5 14l7.3 5.7c1.7-5.2 6.5-9 12.2-9z"/></svg>
+);
 
 export default function App() {
   const dlg = useRef(null);
@@ -207,7 +212,7 @@ export default function App() {
       <h2 id="depo-t">O que pacientes dizem no Google</h2>
     </div>
     <div className="gsum">
-      <span className="gbadge" aria-hidden="true">G</span>
+      <span className="gbadge" aria-hidden="true"><GLogo /></span>
       <strong>5,0</strong>
       <div>
         <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
@@ -221,76 +226,68 @@ export default function App() {
       <div className="review__head">
         <span className="avatar" aria-hidden="true">M</span>
         <div className="review__author"><b>Mozeila</b><span>há 3 anos</span></div>
-        <span className="gbadge gbadge--sm" aria-hidden="true">G</span>
+        <span className="gbadge gbadge--sm" aria-hidden="true"><GLogo /></span>
       </div>
       <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
       <p>Dra Danielle é pra mim mais que uma Psiquiatra, a considero uma amiga em que posso confiar meus sentimentos, angústias e dúvidas. Paciente e preocupada em não só prescrever medicação mas procura entender a história de vida do seu paciente, infelizmente é coisa rara nós consultórios médicos. Uma pessoa acima de tudo humana. Meu muito obrigado!</p>
-      <a href="#" rel="noopener">Ver avaliação no Google</a>
     </article>
     <article className="review">
       <div className="review__head">
         <span className="avatar" aria-hidden="true">M</span>
         <div className="review__author"><b>Morany Edwiges Sabino S. Bráz</b><span>há 3 anos</span></div>
-        <span className="gbadge gbadge--sm" aria-hidden="true">G</span>
+        <span className="gbadge gbadge--sm" aria-hidden="true"><GLogo /></span>
       </div>
       <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
       <p>Dra Danielle é uma profissional de ouro! Eu fiz o agendamento a distância com intuito de ajudar um amigo com dificuldades e ele recebeu todo o acolhimento. A Doutora via mensagem entrou em contato comigo, sempre mantendo uma excelente comunicação e preocupação genuína. Eu recomendo a todos e todas que necessitem de uma profissional competente, qualificada e sobre tudo humana…</p>
-      <a href="#" rel="noopener">Ver avaliação no Google</a>
     </article>
     <article className="review">
       <div className="review__head">
         <span className="avatar" aria-hidden="true">A</span>
         <div className="review__author"><b>Ana Paula R.</b><span>há 8 meses</span></div>
-        <span className="gbadge gbadge--sm" aria-hidden="true">G</span>
+        <span className="gbadge gbadge--sm" aria-hidden="true"><GLogo /></span>
       </div>
       <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
       <p>Cheguei à Dra. Danielle depois de meses com insônia e ansiedade. Desde a primeira consulta me senti ouvida de verdade. Ela explica cada etapa do tratamento, sem pressa, e hoje durmo e vivo com muito mais tranquilidade.</p>
-      <a href="#" rel="noopener">Ver avaliação no Google</a>
     </article>
     <article className="review">
       <div className="review__head">
         <span className="avatar" aria-hidden="true">C</span>
         <div className="review__author"><b>Carlos Eduardo M.</b><span>há 1 ano</span></div>
-        <span className="gbadge gbadge--sm" aria-hidden="true">G</span>
+        <span className="gbadge gbadge--sm" aria-hidden="true"><GLogo /></span>
       </div>
       <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
       <p>Profissional extremamente competente e humana. Faço teleconsulta de outra cidade e o atendimento é tão cuidadoso quanto o presencial. Retornos pontuais, orientações claras. Recomendo sem reservas.</p>
-      <a href="#" rel="noopener">Ver avaliação no Google</a>
     </article>
     <article className="review">
       <div className="review__head">
         <span className="avatar" aria-hidden="true">F</span>
         <div className="review__author"><b>Fernanda L.</b><span>há 5 meses</span></div>
-        <span className="gbadge gbadge--sm" aria-hidden="true">G</span>
+        <span className="gbadge gbadge--sm" aria-hidden="true"><GLogo /></span>
       </div>
       <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
       <p>Levei meu pai, que resistia muito à ideia de procurar um psiquiatra. A Dra. Danielle o acolheu com uma delicadeza que mudou a visão dele sobre o tratamento. Hoje ele está muito melhor e vai às consultas por vontade própria.</p>
-      <a href="#" rel="noopener">Ver avaliação no Google</a>
     </article>
     <article className="review">
       <div className="review__head">
         <span className="avatar" aria-hidden="true">R</span>
         <div className="review__author"><b>Ricardo S.</b><span>há 2 anos</span></div>
-        <span className="gbadge gbadge--sm" aria-hidden="true">G</span>
+        <span className="gbadge gbadge--sm" aria-hidden="true"><GLogo /></span>
       </div>
       <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
       <p>Consultório silencioso e acolhedor, pontualidade e uma médica que realmente escuta. O tratamento para TDAH finalmente fez diferença na minha rotina de trabalho e nos meus relacionamentos.</p>
-      <a href="#" rel="noopener">Ver avaliação no Google</a>
     </article>
     <article className="review">
       <div className="review__head">
         <span className="avatar" aria-hidden="true">J</span>
         <div className="review__author"><b>Juliana T.</b><span>há 1 ano</span></div>
-        <span className="gbadge gbadge--sm" aria-hidden="true">G</span>
+        <span className="gbadge gbadge--sm" aria-hidden="true"><GLogo /></span>
       </div>
       <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
       <p>Pela primeira vez um médico se interessou pela minha história, não só pelos sintomas. Trabalho sério, ético e baseado em ciência, com um cuidado humano que faz toda a diferença. Sou muito grata.</p>
-      <a href="#" rel="noopener">Ver avaliação no Google</a>
     </article>
   </div>
 
   <div className="depo__foot">
-    <a className="pill" href="#" rel="noopener">Ver todas as avaliações no Google<I n="external-link" /></a>
     <div className="ctrls">
       <button type="button" data-dir="-1" aria-label="Avaliação anterior"><I n="chevron-left" /></button>
       <button type="button" data-dir="1" className="is-active" aria-label="Próxima avaliação"><I n="chevron-right" /></button>
@@ -389,24 +386,25 @@ export default function App() {
   {status === 'sent' ? (
     <div className="modal__ok" role="status">
       <h2 id="modal-t">Solicitação enviada!</h2>
-      <p>Recebemos seus dados. Em breve entraremos em contato pelo WhatsApp para confirmar o melhor horário.</p>
+      <p>Recebemos seus dados. Em breve nossa equipe fala com você pelo WhatsApp para combinar o melhor horário.</p>
       <button type="button" className="pill pill--navy" onClick={() => dlg.current.close()}>Fechar</button>
     </div>
   ) : (
     <form onSubmit={enviar}>
       <h2 id="modal-t">Solicitar agendamento</h2>
-      <p>Deixe seus dados e retornaremos para combinar o melhor horário.</p>
-      <label>Nome<input name="nome" placeholder="Seu nome" autoComplete="name" required /></label>
-      <label>WhatsApp<input name="telefone" type="tel" placeholder="Seu WhatsApp" autoComplete="tel" required /></label>
-      <label>Data de nascimento<input name="data_nascimento" type="date" min="1900-01-01" max={new Date().toISOString().slice(0, 10)} autoComplete="bday" required /></label>
-      <label>E-mail <small>(opcional)</small><input name="email" type="email" placeholder="Seu e-mail" autoComplete="email" /></label>
+      <p>Preencha seus dados e nossa equipe fala com você pelo WhatsApp para combinar o melhor horário.</p>
+      <label>Nome<input name="nome" placeholder="Nome e sobrenome" autoComplete="name" required maxLength={80} onInput={e => e.target.setCustomValidity(nomeValido(e.target.value) ? '' : 'Informe nome e sobrenome, só com letras.')} /></label>
+      <label>WhatsApp<input name="telefone" type="tel" placeholder="(21) 99999-9999" autoComplete="tel" required maxLength={15} pattern="\(\d{2}\) 9\d{4}-\d{4}" title="Celular com DDD: (21) 99999-9999" onChange={e => { e.target.value = mascaraTel(e.target.value); }} /></label>
+      <label>Data de nascimento<input name="data_nascimento" type="date" min={`${new Date().getFullYear() - 110}-01-01`} max={new Date().toISOString().slice(0, 10)} autoComplete="bday" required /></label>
+      <label>E-mail<input name="email" type="email" placeholder="seu@email.com" autoComplete="email" required maxLength={120} onInput={e => e.target.setCustomValidity(emailValido(e.target.value) ? '' : 'Confira o e-mail, ex.: nome@email.com')} /></label>
       <fieldset className="modal__tipo">
         <legend>Tipo de consulta</legend>
         <label><input type="radio" name="tipo_consulta" value="presencial" required />Presencial</label>
         <label><input type="radio" name="tipo_consulta" value="online" />Online</label>
       </fieldset>
+      <label>Conte um pouco do que está buscando<textarea name="mensagem" rows="3" placeholder="Escreva do seu jeito, sem pressa." required minLength={10} maxLength={1000} /></label>
       {status === 'error' && <p className="modal__err" role="alert">Não foi possível enviar. Verifique sua conexão e tente novamente.</p>}
-      <button type="submit" className="pill pill--navy" disabled={status === 'sending'}>{status === 'sending' ? 'Enviando…' : 'Quero receber contato'}</button>
+      <button type="submit" className="pill pill--navy" disabled={status === 'sending'}>{status === 'sending' ? 'Enviando…' : 'Solicitar agendamento'}</button>
     </form>
   )}
 </dialog>
