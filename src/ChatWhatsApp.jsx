@@ -5,7 +5,7 @@ const WHATSAPP_DRA = '552124924187';
 // mensagem pronta para a pessoa iniciar a conversa com a Dra. no WhatsApp
 export function linkWhatsApp(d) {
   const tipo = d.tipo_consulta === 'online' ? 'online' : 'presencial';
-  const texto = `Olá, Dra. Danielle! Sou ${d.nome} e acabei de preencher o formulário no site. Gostaria de agendar uma consulta ${tipo}.\n\nO que estou buscando: ${d.mensagem}`;
+  const texto = `Olá, Dra. Danielle! Sou ${d.nome.trim().replace(/\s+/g, ' ')} e acabei de preencher o formulário no site. Gostaria de agendar uma consulta ${tipo}.\n\nO que estou buscando: ${d.mensagem.trim()}`;
   return `https://wa.me/${WHATSAPP_DRA}?text=${encodeURIComponent(texto)}`;
 }
 

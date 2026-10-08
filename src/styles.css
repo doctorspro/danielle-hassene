@@ -93,7 +93,7 @@ svg[data-lucide],svg.lucide{flex:none}
 /* ---------- Atendimentos ---------- */
 .atend{background:#fff;padding:112px var(--gutter);display:flex;flex-direction:column;gap:56px}
 .sec-head{display:flex;align-items:flex-end;gap:64px}
-.sec-head__titles{display:flex;flex-direction:column;gap:14px;flex:none}
+.sec-head__titles{display:flex;flex-direction:column;gap:14px;flex:0 1 auto;min-width:0}
 .sec-head h2{font-family:var(--f-display);font-weight:600;font-size:44px;line-height:48px;color:var(--navy)}
 .sec-head p{font-size:16px;line-height:26px;max-width:520px;min-width:360px;margin-left:auto}
 .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
@@ -138,7 +138,7 @@ svg[data-lucide],svg.lucide{flex:none}
 .depo .sec-head{justify-content:space-between}
 .depo .eyebrow{color:var(--ceu)}
 .depo .sec-head h2{font-weight:300;font-size:52px;line-height:1.1;color:#fff}
-.gsum{display:flex;align-items:center;gap:18px;padding:16px 24px 16px 20px;border-radius:16px;background:#fff;color:var(--navy);box-shadow:inset 0 0 0 1px #DCE9F3}
+.gsum{flex:none;display:flex;align-items:center;gap:18px;padding:16px 24px 16px 20px;border-radius:16px;background:#fff;color:var(--navy);box-shadow:inset 0 0 0 1px #DCE9F3}
 .gbadge{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 1px #DADCE0;font-weight:700;font-size:22px;color:#4285F4}
 .gbadge--sm{width:28px;height:28px;font-size:15px;margin-left:auto}
 .gsum strong{font-family:var(--f-display);font-weight:600;font-size:40px;line-height:1}
@@ -348,3 +348,6 @@ svg[data-lucide],svg.lucide{flex:none}
 .gbadge svg{width:55%;height:55%}
 .wa__go{background:#25D366;color:#fff;font-size:14px;font-weight:600;padding:10px 18px;border-radius:999px}
 .wa__go:hover{background:#1EBE5A}
+.modal .pill--wa{width:100%;justify-content:center;background:#25D366;color:#fff;padding:16px 28px;font-weight:600}
+.modal .pill--wa:hover{background:#1EBE5A}
+.pill--wa svg{width:20px;height:20px}

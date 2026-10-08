@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Activity, ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, CloudRain, FlaskConical, Focus, HeartHandshake, Leaf, MapPin, MessageCircle, MessagesSquare, Minus, Moon, MoonStar, Plus, Repeat, ShieldCheck, Sparkles, Star, Video, Wind, X } from 'lucide-react';
-import ChatWhatsApp, { WaIcon, mascaraTel, nomeValido, emailValido } from './ChatWhatsApp.jsx';
+import ChatWhatsApp, { WaIcon, mascaraTel, nomeValido, emailValido, linkWhatsApp } from './ChatWhatsApp.jsx';
 import './styles.css';
 
 const ICONS = { 'activity': Activity, 'arrow-right': ArrowRight, 'arrow-up-right': ArrowUpRight, 'chevron-left': ChevronLeft, 'chevron-right': ChevronRight, 'cloud-rain': CloudRain, 'flask-conical': FlaskConical, 'focus': Focus, 'heart-handshake': HeartHandshake, 'leaf': Leaf, 'map-pin': MapPin, 'message-circle': MessageCircle, 'messages-square': MessagesSquare, 'minus': Minus, 'moon': Moon, 'moon-star': MoonStar, 'plus': Plus, 'repeat': Repeat, 'shield-check': ShieldCheck, 'sparkles': Sparkles, 'star': Star, 'video': Video, 'wind': Wind, 'x': X };
@@ -46,13 +46,17 @@ export default function App() {
   const chat = useRef(null);
   const abrirChat = e => { e.preventDefault(); chat.current.abrirChat(); };
   const [status, setStatus] = useState('idle'); // idle | sending | sent | error
+  const [waLink, setWaLink] = useState(null);
   const abrir = e => { e.preventDefault(); setStatus('idle'); dlg.current.showModal(); };
   const enviar = async e => {
     e.preventDefault();
     setStatus('sending');
     try {
-      await enviarLead(Object.fromEntries(new FormData(e.target)));
-      e.target.reset(); setStatus('sent');
+      const dados = Object.fromEntries(new FormData(e.target));
+      await enviarLead(dados);
+      const link = linkWhatsApp(dados);
+      e.target.reset(); setWaLink(link); setStatus('sent');
+      setTimeout(() => dlg.current.open && location.assign(link), 2500);
     } catch { setStatus('error'); }
   };
 
@@ -386,8 +390,8 @@ export default function App() {
   {status === 'sent' ? (
     <div className="modal__ok" role="status">
       <h2 id="modal-t">Solicitação enviada!</h2>
-      <p>Recebemos seus dados. Em breve nossa equipe fala com você pelo WhatsApp para combinar o melhor horário.</p>
-      <button type="button" className="pill pill--navy" onClick={() => dlg.current.close()}>Fechar</button>
+      <p>Recebemos seus dados. Agora vamos te levar para o WhatsApp da Dra. Danielle, com uma mensagem pronta. É só tocar em enviar para iniciar o seu atendimento.</p>
+      <a className="pill pill--wa" href={waLink}><WaIcon />Abrir WhatsApp da Dra.</a>
     </div>
   ) : (
     <form onSubmit={enviar}>
