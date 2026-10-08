@@ -12,6 +12,24 @@ function I({ n, className }) {
 
 const WEBHOOK = 'https://crm.doctorspro.com.br/api/v1/webhooks/in/dOFROx4f9J-MCgWv5Qsx4Kp96OJxQVft';
 
+// parâmetros de campanha/clique enviados junto com o lead
+const TRACK = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'utm_id', 'gclid', 'gbraid', 'wbraid', 'gad_source', 'fbclid', 'msclkid', 'ttclid', 'li_fat_id', 'twclid', 'epik', 'sccid'];
+const TRACK_KEY = 'dh_tracking';
+
+// last-touch: uma URL com qualquer parâmetro rastreado substitui o que estava salvo
+function capturarTracking() {
+  const q = new URLSearchParams(location.search);
+  const found = Object.fromEntries(TRACK.filter(k => q.get(k)).map(k => [k, q.get(k)]));
+  if (!Object.keys(found).length) return;
+  found.landing_page = location.href;
+  if (document.referrer) found.referrer = document.referrer;
+  try { localStorage.setItem(TRACK_KEY, JSON.stringify(found)); } catch {}
+}
+
+function lerTracking() {
+  try { return JSON.parse(localStorage.getItem(TRACK_KEY)) || {}; } catch { return {}; }
+}
+
 export default function App() {
   const dlg = useRef(null);
   const [status, setStatus] = useState('idle'); // idle | sending | sent | error
@@ -21,12 +39,16 @@ export default function App() {
     setStatus('sending');
     try {
       // ponytail: webhook sem CORS → no-cors (resposta opaca, só falha de rede é detectada)
-      await fetch(WEBHOOK, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(new FormData(e.target)) });
+      const body = new URLSearchParams(new FormData(e.target));
+      Object.entries(lerTracking()).forEach(([k, v]) => body.set(k, v));
+      body.set('pagina', location.href);
+      await fetch(WEBHOOK, { method: 'POST', mode: 'no-cors', body });
       e.target.reset(); setStatus('sent');
     } catch { setStatus('error'); }
   };
 
   useEffect(() => {
+    capturarTracking();
     const cleanups = [];
 
     // nav flutuante: aparece depois que o topo do hero sai de cena
