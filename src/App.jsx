@@ -29,6 +29,17 @@ function lerTracking() {
   try { return JSON.parse(localStorage.getItem(TRACK_KEY)) || {}; } catch { return {}; }
 }
 
+// link do rodapé para a Doctors Pro: UTMs de indicação deste site + parâmetros de anúncio da visita
+// (gclid, fbclid etc.) preservados; utm_source/medium/campaign/content são sempre os de indicação
+function linkDoctorsPro() {
+  const q = new URLSearchParams({ ...lerTracking(), ...Object.fromEntries(new URLSearchParams(location.search)) });
+  q.set('utm_source', location.hostname);
+  q.set('utm_medium', 'referral');
+  q.set('utm_campaign', 'rodape-site-cliente');
+  q.set('utm_content', 'dra-danielle-hassene');
+  return `https://doctorspro.com.br/?${q}`;
+}
+
 // ponytail: webhook sem CORS → no-cors (resposta opaca, só falha de rede é detectada)
 async function enviarLead(dados) {
   const limpo = Object.fromEntries(Object.entries(dados).map(([k, v]) => [k, String(v).trim().replace(/\s+/g, ' ')]));
@@ -380,6 +391,11 @@ export default function App() {
     </div>
     <address><strong>Psiquiatra na Barra da Tijuca, Rio de Janeiro</strong><br />Shopping Downtown · Av. das Américas, 500, bloco 8, portaria F, sala 210 · Barra da Tijuca, Rio de Janeiro, RJ</address>
     <small>© 2025 Dra. Danielle Hassene Rodrigues · daniellehassene.com.br</small>
+    <a className="footer__dp" href="https://doctorspro.com.br/?utm_medium=referral&utm_campaign=rodape-site-cliente&utm_content=dra-danielle-hassene" target="_blank" rel="noopener"
+      onPointerDown={e => { e.currentTarget.href = linkDoctorsPro(); }} onFocus={e => { e.currentTarget.href = linkDoctorsPro(); }}>
+      <span>Desenvolvido por</span>
+      <img src="/images/doctorspro.png" alt="Doctors Pro, agência de marketing médico" width="160" height="26" loading="lazy" />
+    </a>
   </div>
 </footer>
 <img className="fim__figura" src="/images/v4/dra-recorte.png" alt="Dra. Danielle Hassene de jaleco, braços cruzados, sorrindo" width="520" height="640" />
