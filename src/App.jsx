@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Activity, ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, CloudRain, ExternalLink, FlaskConical, Focus, HeartHandshake, Leaf, MapPin, MessageCircle, MessagesSquare, Minus, Moon, MoonStar, Plus, Repeat, ShieldCheck, Sparkles, Star, Video, Wind, X } from 'lucide-react';
+import ChatWhatsApp, { WaIcon } from './ChatWhatsApp.jsx';
 import './styles.css';
 
 const ICONS = { 'activity': Activity, 'arrow-right': ArrowRight, 'arrow-up-right': ArrowUpRight, 'chevron-left': ChevronLeft, 'chevron-right': ChevronRight, 'cloud-rain': CloudRain, 'external-link': ExternalLink, 'flask-conical': FlaskConical, 'focus': Focus, 'heart-handshake': HeartHandshake, 'leaf': Leaf, 'map-pin': MapPin, 'message-circle': MessageCircle, 'messages-square': MessagesSquare, 'minus': Minus, 'moon': Moon, 'moon-star': MoonStar, 'plus': Plus, 'repeat': Repeat, 'shield-check': ShieldCheck, 'sparkles': Sparkles, 'star': Star, 'video': Video, 'wind': Wind, 'x': X };
@@ -30,19 +31,25 @@ function lerTracking() {
   try { return JSON.parse(localStorage.getItem(TRACK_KEY)) || {}; } catch { return {}; }
 }
 
+// ponytail: webhook sem CORS → no-cors (resposta opaca, só falha de rede é detectada)
+async function enviarLead(dados) {
+  const body = new URLSearchParams(dados);
+  Object.entries(lerTracking()).forEach(([k, v]) => body.set(k, v));
+  body.set('pagina', location.href);
+  await fetch(WEBHOOK, { method: 'POST', mode: 'no-cors', body });
+}
+
 export default function App() {
   const dlg = useRef(null);
+  const chat = useRef(null);
+  const abrirChat = e => { e.preventDefault(); chat.current.abrirChat(); };
   const [status, setStatus] = useState('idle'); // idle | sending | sent | error
   const abrir = e => { e.preventDefault(); setStatus('idle'); dlg.current.showModal(); };
   const enviar = async e => {
     e.preventDefault();
     setStatus('sending');
     try {
-      // ponytail: webhook sem CORS → no-cors (resposta opaca, só falha de rede é detectada)
-      const body = new URLSearchParams(new FormData(e.target));
-      Object.entries(lerTracking()).forEach(([k, v]) => body.set(k, v));
-      body.set('pagina', location.href);
-      await fetch(WEBHOOK, { method: 'POST', mode: 'no-cors', body });
+      await enviarLead(Object.fromEntries(new FormData(e.target)));
       e.target.reset(); setStatus('sent');
     } catch { setStatus('error'); }
   };
@@ -117,7 +124,7 @@ export default function App() {
     <p className="hero__sub">Psiquiatria, psicoterapia e medicina do sono com ciência, escuta e sensibilidade. Consultas presenciais no Shopping Downtown, na Barra da Tijuca, ou por teleconsulta para todo o Brasil.</p>
     <div className="hero__ctas">
       <a className="pill pill--primary" href="#agendar" onClick={abrir}>Agendar consulta<I n="arrow-right" /></a>
-      <a className="pill pill--white" href="#agendar">Conversar no WhatsApp<I n="message-circle" /></a>
+      <a className="pill pill--white" href="#agendar" onClick={abrirChat}>Conversar no WhatsApp<I n="message-circle" /></a>
     </div>
     <p className="cred"><I n="shield-check" />CRM 5259505-5 · RQE 40676 e 40677</p>
   </div>
@@ -360,7 +367,7 @@ export default function App() {
     <p>Agende uma consulta presencial na Barra da Tijuca ou por teleconsulta.</p>
     <div className="cta__btns">
       <a className="pill pill--navy" href="#agendar" onClick={abrir}>Agendar consulta<I n="arrow-right" /></a>
-      <a className="pill pill--ghost" href="#"><I n="message-circle" />Conversar no WhatsApp</a>
+      <a className="pill pill--ghost" href="#agendar" onClick={abrirChat}><I n="message-circle" />Conversar no WhatsApp</a>
     </div>
   </div>
 </div>
@@ -400,6 +407,9 @@ export default function App() {
     </form>
   )}
 </dialog>
+
+<ChatWhatsApp dlgRef={chat} enviarLead={enviarLead} />
+<button type="button" className="wa-fab" aria-label="Conversar no WhatsApp" onClick={abrirChat}><WaIcon /></button>
     </>
   );
 }
