@@ -106,6 +106,13 @@ export default function App() {
       d.addEventListener('toggle', h); cleanups.push(() => d.removeEventListener('toggle', h));
     });
 
+    // title nos links: aria-label ou texto; "Saber mais" ganha o nome do atendimento
+    document.querySelectorAll('a:not([title])').forEach(a => {
+      const txt = (a.getAttribute('aria-label') || a.textContent).trim().replace(/\s+/g, ' ');
+      const card = a.closest('.card')?.querySelector('h3')?.textContent;
+      a.title = card ? `Saber mais sobre ${card}` : txt;
+    });
+
     // reveal suave
     const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && (e.target.classList.add('in'), io.unobserve(e.target))), { rootMargin: '0px 0px -10% 0px' });
     document.querySelectorAll('.reveal').forEach(el => io.observe(el));
@@ -118,7 +125,7 @@ export default function App() {
     <>
 {/* Nav flutuante (aparece ao rolar) */}
 <div className="floatnav" id="floatnav">
-  <a className="brand" href="#topo"><img src="/images/logo-dh-nav.webp" alt="" width="38" height="38" /><span>Dra. Danielle Hassene</span></a>
+  <a className="brand" href="#topo"><img src="/images/logo-dh-nav.webp" alt="Logotipo Dra. Danielle Hassene" title="Logotipo Dra. Danielle Hassene" width="38" height="38" /><span>Dra. Danielle Hassene</span></a>
   <nav className="links" aria-label="Seções">
     <a href="#atendimentos">Atendimentos</a><a href="#sobre">Sobre</a><a href="#trajetoria">Trajetória</a><a href="#consultorio">Consultório</a><a href="#duvidas">Dúvidas</a>
   </nav>
@@ -129,7 +136,7 @@ export default function App() {
   <div className="hero__bg" role="img" aria-label="Dra. Danielle Hassene, psiquiatra, em seu consultório na Barra da Tijuca"></div>
 
   <div className="topbar">
-    <a href="#topo" aria-label="Início"><img className="topbar__logo" src="/images/logo-dh.webp" alt="Logotipo Dra. Danielle Hassene" width="48" height="48" /></a>
+    <a href="#topo" aria-label="Início"><img className="topbar__logo" src="/images/logo-dh.webp" alt="Logotipo Dra. Danielle Hassene" title="Logotipo Dra. Danielle Hassene" width="48" height="48" /></a>
     <nav aria-label="Principal">
       <a href="#atendimentos">Atendimentos</a><a href="#sobre">Sobre</a><a href="#trajetoria">Trajetória</a><a href="#consultorio">Consultório</a><a href="#duvidas">Dúvidas</a>
     </nav>
@@ -137,7 +144,7 @@ export default function App() {
   </div>
 
   <div className="hero__text">
-    <h1><span className="tag"><I n="map-pin" />Psiquiatra na Barra da Tijuca<span className="tag__sep" aria-hidden="true"></span>Rio de Janeiro</span><span className="h1__frase">Cuidar da mente é um gesto de coragem.</span></h1>
+    <h1><span className="tag"><I n="map-pin" />Psiquiatra na Barra da Tijuca<span className="sr-only">, </span><span className="tag__sep" aria-hidden="true"></span>Rio de Janeiro<span className="sr-only">: </span></span><span className="h1__frase">Cuidar da mente é um gesto de coragem.</span></h1>
     <p className="hero__sub">Psiquiatria, psicoterapia e medicina do sono com ciência, escuta e sensibilidade. Consultas presenciais no Shopping Downtown, na Barra da Tijuca, ou por teleconsulta para todo o Brasil.</p>
     <div className="hero__ctas">
       <a className="pill pill--primary" href="#agendar" onClick={abrir}>Agendar consulta<I n="arrow-right" /></a>
@@ -187,8 +194,8 @@ export default function App() {
 <section className="sobre reveal" id="sobre" aria-labelledby="sobre-t">
   <div className="collage">
     <div className="collage__circle" aria-hidden="true"></div>
-    <img className="collage__photo" src="/images/dra-consultorio.webp" alt="Dra. Danielle Hassene sentada em seu consultório" width="400" height="560" />
-    <img className="collage__room" src="/images/consultorio/diva.webp" alt="Sala de atendimento com divã branco, poltrona e luminária" width="230" height="260" loading="lazy" />
+    <img className="collage__photo" src="/images/dra-consultorio.webp" alt="Dra. Danielle Hassene sentada em seu consultório" title="Dra. Danielle Hassene sentada em seu consultório" width="400" height="560" />
+    <img className="collage__room" src="/images/consultorio/diva.webp" alt="Sala de atendimento com divã branco, poltrona e luminária" title="Sala de atendimento com divã branco, poltrona e luminária" width="230" height="260" loading="lazy" />
   </div>
   <div className="sobre__text">
     <span className="eyebrow">Sobre a Dra. Danielle</span>
@@ -312,11 +319,11 @@ export default function App() {
 
 <section className="consult reveal" id="consultorio" aria-labelledby="consult-t">
 <div className="canvas">
-  <img className="consult__pano" src="/images/consultorio/recepcao.webp" alt="Recepção do consultório, com aparador branco, quadro e poltronas" width="1200" height="460" loading="lazy" />
+  <img className="consult__pano" src="/images/consultorio/recepcao.webp" alt="Recepção do consultório, com aparador branco, quadro e poltronas" title="Recepção do consultório, com aparador branco, quadro e poltronas" width="1200" height="460" loading="lazy" />
   <div className="consult__detail" id="consult-slides">
-    <img className="is-on" src="/images/consultorio/aparador.webp" alt="Aparador da recepção com flores, revistas e álcool em gel" width="320" height="340" loading="lazy" />
-    <img src="/images/consultorio/diva.webp" alt="Sala de atendimento com divã branco e poltrona" width="320" height="340" loading="lazy" />
-    <img src="/images/consultorio/recepcao.webp" alt="Recepção com quadro, aparador e poltronas" width="320" height="340" loading="lazy" />
+    <img className="is-on" src="/images/consultorio/aparador.webp" alt="Aparador da recepção com flores, revistas e álcool em gel" title="Aparador da recepção com flores, revistas e álcool em gel" width="320" height="340" loading="lazy" />
+    <img src="/images/consultorio/diva.webp" alt="Sala de atendimento com divã branco e poltrona" title="Sala de atendimento com divã branco e poltrona" width="320" height="340" loading="lazy" />
+    <img src="/images/consultorio/recepcao.webp" alt="Recepção com quadro, aparador e poltronas" title="Recepção com quadro, aparador e poltronas" width="320" height="340" loading="lazy" />
   </div>
   <div className="consult__card">
     <h2 id="consult-t">Um consultório na Barra da Tijuca feito para respirar.</h2>
@@ -386,32 +393,32 @@ export default function App() {
 <footer className="footer">
   <div className="footer__canvas">
     <div className="brand">
-      <img src="/images/logo-dh.webp" alt="" width="48" height="48" />
+      <img src="/images/logo-dh.webp" alt="Logotipo Dra. Danielle Hassene, psiquiatra na Barra da Tijuca" title="Logotipo Dra. Danielle Hassene, psiquiatra na Barra da Tijuca" width="48" height="48" />
       <div><b>Dra. Danielle Hassene</b><span>CRM 5259505-5 · RQE 40676 e 40677</span></div>
     </div>
     <address><strong>Psiquiatra na Barra da Tijuca, Rio de Janeiro</strong><br />Shopping Downtown · Av. das Américas, 500, bloco 8, portaria F, sala 210 · Barra da Tijuca, Rio de Janeiro, RJ</address>
     <small>© 2025 Dra. Danielle Hassene Rodrigues · daniellehassene.com.br</small>
-    <a className="footer__dp" href="https://doctorspro.com.br/?utm_medium=referral&utm_campaign=rodape-site-cliente&utm_content=dra-danielle-hassene" target="_blank" rel="noopener"
+    <a className="footer__dp" title="Doctors Pro, agência de marketing médico" href="https://doctorspro.com.br/?utm_medium=referral&utm_campaign=rodape-site-cliente&utm_content=dra-danielle-hassene" target="_blank" rel="noopener"
       onPointerDown={e => { e.currentTarget.href = linkDoctorsPro(); }} onFocus={e => { e.currentTarget.href = linkDoctorsPro(); }}>
       <span>Desenvolvido por</span>
-      <img src="/images/doctorspro.webp" alt="Doctors Pro, agência de marketing médico" width="160" height="26" loading="lazy" />
+      <img src="/images/doctorspro.webp" alt="Doctors Pro, agência de marketing médico" title="Doctors Pro, agência de marketing médico" width="160" height="26" loading="lazy" />
     </a>
   </div>
 </footer>
-<img className="fim__figura" src="/images/v4/dra-rodape.webp" alt="Dra. Danielle Hassene de jaleco, braços cruzados, sorrindo" width="353" height="640" loading="lazy" />
+<img className="fim__figura" src="/images/v4/dra-rodape.webp" alt="Dra. Danielle Hassene de jaleco, braços cruzados, sorrindo" title="Dra. Danielle Hassene de jaleco, braços cruzados, sorrindo" width="353" height="640" loading="lazy" />
 </div>
 
 <dialog className="modal" ref={dlg} aria-labelledby="modal-t" onClick={e => e.target === dlg.current && dlg.current.close()}>
   <button type="button" className="modal__x" aria-label="Fechar" onClick={() => dlg.current.close()}><I n="x" /></button>
   {status === 'sent' ? (
     <div className="modal__ok" role="status">
-      <h2 id="modal-t">Solicitação enviada!</h2>
+      <p className="modal__title" id="modal-t">Solicitação enviada!</p>
       <p>Recebemos seus dados. Agora vamos te levar para o WhatsApp da Dra. Danielle, com uma mensagem pronta. É só tocar em enviar para iniciar o seu atendimento.</p>
-      <a className="pill pill--wa" href={waLink}><WaIcon />Abrir WhatsApp da Dra.</a>
+      <a className="pill pill--wa" href={waLink} title="Abrir o WhatsApp da Dra. Danielle Hassene"><WaIcon />Abrir WhatsApp da Dra.</a>
     </div>
   ) : (
     <form onSubmit={enviar}>
-      <h2 id="modal-t">Solicitar agendamento</h2>
+      <p className="modal__title" id="modal-t">Solicitar agendamento</p>
       <p>Preencha seus dados e nossa equipe fala com você pelo WhatsApp para combinar o melhor horário.</p>
       <label>Nome<input name="nome" placeholder="Nome e sobrenome" autoComplete="name" required maxLength={80} onInput={e => e.target.setCustomValidity(nomeValido(e.target.value) ? '' : 'Informe nome e sobrenome, só com letras.')} /></label>
       <label>WhatsApp<input name="telefone" type="tel" placeholder="(21) 99999-9999" autoComplete="tel" required maxLength={15} pattern="\(\d{2}\) 9\d{4}-\d{4}" title="Celular com DDD: (21) 99999-9999" onChange={e => { e.target.value = mascaraTel(e.target.value); }} /></label>

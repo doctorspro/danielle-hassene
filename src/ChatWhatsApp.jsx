@@ -143,7 +143,7 @@ export default function ChatWhatsApp({ dlgRef, enviarLead }) {
   return (
     <dialog className="wa" ref={dlgRef} aria-label="Conversa no WhatsApp com a Dra. Danielle Hassene" onClick={e => e.target === dlgRef.current && dlgRef.current.close()}>
       <header className="wa__top">
-        <img src="/images/dra-avatar.webp" alt="" width="40" height="40" />
+        <img src="/images/dra-avatar.webp" alt="Dra. Danielle Hassene" title="Dra. Danielle Hassene" width="40" height="40" />
         <div><b>Dra. Danielle Hassene</b><span>{typing ? 'digitando…' : 'online'}</span></div>
         <button type="button" aria-label="Fechar conversa" onClick={() => dlgRef.current.close()}>×</button>
       </header>
@@ -155,7 +155,7 @@ export default function ChatWhatsApp({ dlgRef, enviarLead }) {
         {typing && <div className="wa__msg wa__msg--bot wa__dots" aria-label="digitando"><span /><span /><span /></div>}
         {!typing && s?.options && <div className="wa__opts">{s.options.map(([rotulo, v]) => <button type="button" key={v} onClick={() => responder(rotulo, v)}>{rotulo}</button>)}</div>}
         {!typing && falhou && <div className="wa__opts"><button type="button" onClick={() => perguntar(STEPS.length, run.current)}>Tentar novamente</button></div>}
-        {!typing && wa && <div className="wa__opts"><a className="wa__go" href={wa}>Abrir WhatsApp da Dra.</a></div>}
+        {!typing && wa && <div className="wa__opts"><a className="wa__go" href={wa} title="Abrir o WhatsApp da Dra. Danielle Hassene">Abrir WhatsApp da Dra.</a></div>}
         <div ref={fim} />
       </div>
       <form className="wa__bar" onSubmit={enviar}>
