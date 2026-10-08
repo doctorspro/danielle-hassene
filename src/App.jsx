@@ -22,8 +22,6 @@ function capturarTracking() {
   const q = new URLSearchParams(location.search);
   const found = Object.fromEntries(TRACK.filter(k => q.get(k)).map(k => [k, q.get(k)]));
   if (!Object.keys(found).length) return;
-  found.landing_page = location.href;
-  if (document.referrer) found.referrer = document.referrer;
   try { localStorage.setItem(TRACK_KEY, JSON.stringify(found)); } catch {}
 }
 
@@ -33,9 +31,8 @@ function lerTracking() {
 
 // ponytail: webhook sem CORS → no-cors (resposta opaca, só falha de rede é detectada)
 async function enviarLead(dados) {
-  const body = new URLSearchParams(dados);
+  const body = new URLSearchParams({ ...dados, telefone: dados.telefone.replace(/\D/g, '') });
   Object.entries(lerTracking()).forEach(([k, v]) => body.set(k, v));
-  body.set('pagina', location.href);
   await fetch(WEBHOOK, { method: 'POST', mode: 'no-cors', body });
 }
 
@@ -401,7 +398,13 @@ export default function App() {
       <p>Deixe seus dados e retornaremos para combinar o melhor horário.</p>
       <label>Nome<input name="nome" placeholder="Seu nome" autoComplete="name" required /></label>
       <label>WhatsApp<input name="telefone" type="tel" placeholder="Seu WhatsApp" autoComplete="tel" required /></label>
+      <label>Data de nascimento<input name="data_nascimento" type="date" min="1900-01-01" max={new Date().toISOString().slice(0, 10)} autoComplete="bday" required /></label>
       <label>E-mail <small>(opcional)</small><input name="email" type="email" placeholder="Seu e-mail" autoComplete="email" /></label>
+      <fieldset className="modal__tipo">
+        <legend>Tipo de consulta</legend>
+        <label><input type="radio" name="tipo_consulta" value="presencial" required />Presencial</label>
+        <label><input type="radio" name="tipo_consulta" value="online" />Online</label>
+      </fieldset>
       {status === 'error' && <p className="modal__err" role="alert">Não foi possível enviar. Verifique sua conexão e tente novamente.</p>}
       <button type="submit" className="pill pill--navy" disabled={status === 'sending'}>{status === 'sending' ? 'Enviando…' : 'Quero receber contato'}</button>
     </form>

@@ -340,3 +340,9 @@ svg[data-lucide],svg.lucide{flex:none}
 .wa__bar button:disabled{background:#8696A0;cursor:default}
 .wa__bar button svg{width:22px;height:22px}
 @media (max-width:520px){.wa{width:100%;height:100dvh;max-width:none;max-height:none;border-radius:0}.wa-fab{right:16px;bottom:16px;width:56px;height:56px}}
+
+.modal__tipo{border:0;padding:0;margin:0 0 14px;display:flex;flex-wrap:wrap;gap:10px}
+.modal__tipo legend{font-size:14px;font-weight:500;color:var(--navy);margin-bottom:6px;padding:0}
+.modal__tipo label{flex:1;display:flex;align-items:center;gap:8px;margin:0;padding:12px 14px;border:1px solid #D5DCE6;border-radius:12px;cursor:pointer}
+.modal__tipo label:has(:checked){border-color:var(--azul-clinico);background:var(--gelo)}
+.modal__tipo input{display:inline;width:auto;margin:0;accent-color:var(--azul-clinico)}

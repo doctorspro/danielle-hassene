@@ -5,10 +5,23 @@ const STEPS = [
     valid: v => v.length >= 2, err: 'Pode me dizer seu nome?' },
   { key: 'telefone', ask: d => `Prazer, ${d.nome.split(' ')[0]}! Qual é o seu WhatsApp com DDD?`, type: 'tel', ac: 'tel', ph: '(21) 99999-9999',
     valid: v => v.replace(/\D/g, '').length >= 10, err: 'Esse número parece incompleto. Pode enviar com o DDD?' },
+  { key: 'data_nascimento', ask: () => 'Qual é a sua data de nascimento?', type: 'text', ac: 'bday', ph: 'DD/MM/AAAA', mode: 'numeric',
+    parse: nascimento, err: 'Não entendi a data. Pode enviar no formato DD/MM/AAAA?' },
   { key: 'email', ask: () => 'E qual é o seu e-mail? Se preferir, pode pular.', type: 'email', ac: 'email', ph: 'seu@email.com', skip: true,
     valid: v => /^\S+@\S+\.\S+$/.test(v), err: 'Esse e-mail parece incorreto. Pode conferir?' },
-  { key: 'modalidade', ask: () => 'Você prefere consulta presencial na Barra da Tijuca ou teleconsulta?', options: ['Presencial', 'Teleconsulta'] },
+  { key: 'tipo_consulta', ask: () => 'Você prefere consulta presencial na Barra da Tijuca ou online?',
+    options: [['Presencial', 'presencial'], ['Online', 'online']] },
 ];
+
+// "23/04/1985" → "1985-04-23"; null se a data não existir ou estiver fora do intervalo
+function nascimento(v) {
+  const m = v.match(/^(\d{1,2})\D+(\d{1,2})\D+(\d{4})$/);
+  if (!m) return null;
+  const [, d, mes, a] = m.map(Number);
+  const dt = new Date(Date.UTC(a, mes - 1, d));
+  if (dt.getUTCDate() !== d || dt.getUTCMonth() !== mes - 1 || a < 1900 || dt > new Date()) return null;
+  return dt.toISOString().slice(0, 10);
+}
 
 const hora = () => new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 const espera = ms => new Promise(r => setTimeout(r, ms));
@@ -60,8 +73,9 @@ export default function ChatWhatsApp({ dlgRef, enviarLead }) {
     const s = STEPS[step];
     setMsgs(m => [...m, { de: 'eu', texto, hora: hora() }]);
     setValor('');
-    if (s.valid && guardado && !s.valid(guardado)) { bot(s.err, run.current); return; }
-    dados.current[s.key] = guardado;
+    const v = s.parse && guardado ? s.parse(guardado) : guardado;
+    if (v === null || (s.valid && v && !s.valid(v))) { bot(s.err, run.current); return; }
+    dados.current[s.key] = v;
     setStep(-1);
     perguntar(step + 1, run.current);
   };
@@ -94,13 +108,13 @@ export default function ChatWhatsApp({ dlgRef, enviarLead }) {
           <div key={i} className={`wa__msg wa__msg--${m.de}`}>{m.texto}<time>{m.hora}{m.de === 'eu' && <i aria-hidden="true">✓✓</i>}</time></div>
         ))}
         {typing && <div className="wa__msg wa__msg--bot wa__dots" aria-label="digitando"><span /><span /><span /></div>}
-        {!typing && s?.options && <div className="wa__opts">{s.options.map(o => <button type="button" key={o} onClick={() => responder(o)}>{o}</button>)}</div>}
+        {!typing && s?.options && <div className="wa__opts">{s.options.map(([rotulo, v]) => <button type="button" key={v} onClick={() => responder(rotulo, v)}>{rotulo}</button>)}</div>}
         {!typing && s?.skip && <div className="wa__opts"><button type="button" onClick={() => responder('Prefiro pular', '')}>Pular</button></div>}
         {!typing && falhou && <div className="wa__opts"><button type="button" onClick={() => perguntar(STEPS.length, run.current)}>Tentar novamente</button></div>}
         <div ref={fim} />
       </div>
       <form className="wa__bar" onSubmit={enviar}>
-        <input ref={campo} type={s?.type || 'text'} autoComplete={s?.ac} value={valor} onChange={e => setValor(e.target.value)}
+        <input ref={campo} type={s?.type || 'text'} autoComplete={s?.ac} inputMode={s?.mode} value={valor} onChange={e => setValor(e.target.value)}
           placeholder={s?.type ? s.ph : 'Mensagem'} disabled={!s?.type || typing} aria-label="Sua resposta" />
         <button type="submit" aria-label="Enviar" disabled={!s?.type || typing || !valor.trim()}>
           <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2z" /></svg>
