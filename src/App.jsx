@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
-import { Activity, ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, CloudRain, ExternalLink, FlaskConical, Focus, HeartHandshake, Leaf, MapPin, MessageCircle, MessagesSquare, Minus, Moon, MoonStar, Plus, Repeat, ShieldCheck, Sparkles, Star, Video, Wind } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Activity, ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, CloudRain, ExternalLink, FlaskConical, Focus, HeartHandshake, Leaf, MapPin, MessageCircle, MessagesSquare, Minus, Moon, MoonStar, Plus, Repeat, ShieldCheck, Sparkles, Star, Video, Wind, X } from 'lucide-react';
 import './styles.css';
 
-const ICONS = { 'activity': Activity, 'arrow-right': ArrowRight, 'arrow-up-right': ArrowUpRight, 'chevron-left': ChevronLeft, 'chevron-right': ChevronRight, 'cloud-rain': CloudRain, 'external-link': ExternalLink, 'flask-conical': FlaskConical, 'focus': Focus, 'heart-handshake': HeartHandshake, 'leaf': Leaf, 'map-pin': MapPin, 'message-circle': MessageCircle, 'messages-square': MessagesSquare, 'minus': Minus, 'moon': Moon, 'moon-star': MoonStar, 'plus': Plus, 'repeat': Repeat, 'shield-check': ShieldCheck, 'sparkles': Sparkles, 'star': Star, 'video': Video, 'wind': Wind };
+const ICONS = { 'activity': Activity, 'arrow-right': ArrowRight, 'arrow-up-right': ArrowUpRight, 'chevron-left': ChevronLeft, 'chevron-right': ChevronRight, 'cloud-rain': CloudRain, 'external-link': ExternalLink, 'flask-conical': FlaskConical, 'focus': Focus, 'heart-handshake': HeartHandshake, 'leaf': Leaf, 'map-pin': MapPin, 'message-circle': MessageCircle, 'messages-square': MessagesSquare, 'minus': Minus, 'moon': Moon, 'moon-star': MoonStar, 'plus': Plus, 'repeat': Repeat, 'shield-check': ShieldCheck, 'sparkles': Sparkles, 'star': Star, 'video': Video, 'wind': Wind, 'x': X };
 
 // Ícone Lucide por nome kebab-case (ex.: "arrow-right")
 function I({ n, className }) {
@@ -10,7 +10,22 @@ function I({ n, className }) {
   return Icon ? <Icon className={className} aria-hidden="true" /> : null;
 }
 
+const WEBHOOK = 'https://crm.doctorspro.com.br/api/v1/webhooks/in/dOFROx4f9J-MCgWv5Qsx4Kp96OJxQVft';
+
 export default function App() {
+  const dlg = useRef(null);
+  const [status, setStatus] = useState('idle'); // idle | sending | sent | error
+  const abrir = e => { e.preventDefault(); setStatus('idle'); dlg.current.showModal(); };
+  const enviar = async e => {
+    e.preventDefault();
+    setStatus('sending');
+    try {
+      // ponytail: webhook sem CORS → no-cors (resposta opaca, só falha de rede é detectada)
+      await fetch(WEBHOOK, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(new FormData(e.target)) });
+      e.target.reset(); setStatus('sent');
+    } catch { setStatus('error'); }
+  };
+
   useEffect(() => {
     const cleanups = [];
 
@@ -61,7 +76,7 @@ export default function App() {
   <nav className="links" aria-label="Seções">
     <a href="#atendimentos">Atendimentos</a><a href="#sobre">Sobre</a><a href="#trajetoria">Trajetória</a><a href="#consultorio">Consultório</a><a href="#duvidas">Dúvidas</a>
   </nav>
-  <a className="pill pill--primary" href="#agendar">Agendar consulta</a>
+  <a className="pill pill--primary" href="#agendar" onClick={abrir}>Agendar consulta</a>
 </div>
 
 <header className="hero" id="topo">
@@ -72,14 +87,14 @@ export default function App() {
     <nav aria-label="Principal">
       <a href="#atendimentos">Atendimentos</a><a href="#sobre">Sobre</a><a href="#trajetoria">Trajetória</a><a href="#consultorio">Consultório</a><a href="#duvidas">Dúvidas</a>
     </nav>
-    <a className="pill" href="#agendar" aria-label="Agendar consulta"><span>Agendar consulta</span><I n="arrow-up-right" /></a>
+    <a className="pill" href="#agendar" aria-label="Agendar consulta" onClick={abrir}><span>Agendar consulta</span><I n="arrow-up-right" /></a>
   </div>
 
   <div className="hero__text">
     <h1><span className="tag"><I n="map-pin" />Psiquiatra na Barra da Tijuca<span className="tag__sep" aria-hidden="true"></span>Rio de Janeiro</span><span className="h1__frase">Cuidar da mente é um gesto de coragem.</span></h1>
     <p className="hero__sub">Psiquiatria, psicoterapia e medicina do sono com ciência, escuta e sensibilidade. Consultas presenciais no Shopping Downtown, na Barra da Tijuca, ou por teleconsulta para todo o Brasil.</p>
     <div className="hero__ctas">
-      <a className="pill pill--primary" href="#agendar">Agendar consulta<I n="arrow-right" /></a>
+      <a className="pill pill--primary" href="#agendar" onClick={abrir}>Agendar consulta<I n="arrow-right" /></a>
       <a className="pill pill--white" href="#agendar">Conversar no WhatsApp<I n="message-circle" /></a>
     </div>
     <p className="cred"><I n="shield-check" />CRM 5259505-5 · RQE 40676 e 40677</p>
@@ -322,7 +337,7 @@ export default function App() {
     <h2 id="cta-t">Vamos conversar?</h2>
     <p>Agende uma consulta presencial na Barra da Tijuca ou por teleconsulta.</p>
     <div className="cta__btns">
-      <a className="pill pill--navy" href="#">Agendar consulta<I n="arrow-right" /></a>
+      <a className="pill pill--navy" href="#agendar" onClick={abrir}>Agendar consulta<I n="arrow-right" /></a>
       <a className="pill pill--ghost" href="#"><I n="message-circle" />Conversar no WhatsApp</a>
     </div>
   </div>
@@ -342,6 +357,27 @@ export default function App() {
 </footer>
 <img className="fim__figura" src="/images/v4/dra-recorte.png" alt="Dra. Danielle Hassene de jaleco, braços cruzados, sorrindo" width="520" height="640" />
 </div>
+
+<dialog className="modal" ref={dlg} aria-labelledby="modal-t" onClick={e => e.target === dlg.current && dlg.current.close()}>
+  <button type="button" className="modal__x" aria-label="Fechar" onClick={() => dlg.current.close()}><I n="x" /></button>
+  {status === 'sent' ? (
+    <div className="modal__ok" role="status">
+      <h2 id="modal-t">Solicitação enviada!</h2>
+      <p>Recebemos seus dados. Em breve entraremos em contato pelo WhatsApp para confirmar o melhor horário.</p>
+      <button type="button" className="pill pill--navy" onClick={() => dlg.current.close()}>Fechar</button>
+    </div>
+  ) : (
+    <form onSubmit={enviar}>
+      <h2 id="modal-t">Solicitar agendamento</h2>
+      <p>Deixe seus dados e retornaremos para combinar o melhor horário.</p>
+      <label>Nome<input name="nome" placeholder="Seu nome" autoComplete="name" required /></label>
+      <label>WhatsApp<input name="telefone" type="tel" placeholder="Seu WhatsApp" autoComplete="tel" required /></label>
+      <label>E-mail <small>(opcional)</small><input name="email" type="email" placeholder="Seu e-mail" autoComplete="email" /></label>
+      {status === 'error' && <p className="modal__err" role="alert">Não foi possível enviar. Verifique sua conexão e tente novamente.</p>}
+      <button type="submit" className="pill pill--navy" disabled={status === 'sending'}>{status === 'sending' ? 'Enviando…' : 'Quero receber contato'}</button>
+    </form>
+  )}
+</dialog>
     </>
   );
 }

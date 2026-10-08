@@ -290,3 +290,17 @@ svg[data-lucide],svg.lucide{flex:none}
   .cta{padding-block:80px}
   .footer__canvas{flex-direction:column;align-items:flex-start}
 }
+
+/* modal de agendamento */
+.modal{border:0;border-radius:24px;padding:40px 32px 32px;width:min(460px,calc(100% - 32px));color:var(--grafite);background:#fff;box-shadow:var(--sombra)}
+.modal::backdrop{background:#000A3Db3}
+.modal h2{font-family:var(--f-display);color:var(--navy);font-size:24px;margin-bottom:8px}
+.modal form>p,.modal__ok p{margin-bottom:20px}
+.modal label{display:block;font-size:14px;font-weight:500;color:var(--navy);margin-bottom:14px}
+.modal label small{color:var(--cinza);font-weight:400}
+.modal input{display:block;width:100%;margin-top:6px;padding:14px 16px;border:1px solid #D5DCE6;border-radius:12px;font:inherit;font-size:16px;color:var(--tinta)}
+.modal input:focus{outline:2px solid var(--azul-vital);outline-offset:1px;border-color:transparent}
+.modal .pill{width:100%;justify-content:center;border:0;margin-top:6px}
+.modal .pill:disabled{opacity:.6;cursor:wait}
+.modal__x{position:absolute;top:14px;right:14px;width:40px;height:40px;display:grid;place-items:center;border:0;border-radius:999px;background:var(--gelo);color:var(--navy)}
+.modal__err{color:#B3261E;font-size:14px;margin-bottom:12px}
