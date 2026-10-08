@@ -10,6 +10,7 @@ function inlineCss() {
     enforce: 'post',
     generateBundle(_, bundle) {
       const html = bundle['index.html'];
+      if (!html) return; // build SSR não tem index.html
       for (const [name, asset] of Object.entries(bundle)) {
         if (!name.endsWith('.css')) continue;
         const tag = new RegExp(`<link rel="stylesheet"[^>]*href="/${name}"[^>]*>`);

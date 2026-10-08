@@ -106,6 +106,11 @@ export default function App() {
       d.addEventListener('toggle', h); cleanups.push(() => d.removeEventListener('toggle', h));
     });
 
+    // limites da data de nascimento calculados no navegador (o HTML é gerado no build)
+    const nasc = document.querySelector('input[name=data_nascimento]');
+    nasc.min = `${new Date().getFullYear() - 110}-01-01`;
+    nasc.max = new Date().toISOString().slice(0, 10);
+
     // title nos links: aria-label ou texto; "Saber mais" ganha o nome do atendimento
     document.querySelectorAll('a:not([title])').forEach(a => {
       const txt = (a.getAttribute('aria-label') || a.textContent).trim().replace(/\s+/g, ' ');
@@ -422,7 +427,7 @@ export default function App() {
       <p>Preencha seus dados e nossa equipe fala com você pelo WhatsApp para combinar o melhor horário.</p>
       <label>Nome<input name="nome" placeholder="Nome e sobrenome" autoComplete="name" required maxLength={80} onInput={e => e.target.setCustomValidity(nomeValido(e.target.value) ? '' : 'Informe nome e sobrenome, só com letras.')} /></label>
       <label>WhatsApp<input name="telefone" type="tel" placeholder="(21) 99999-9999" autoComplete="tel" required maxLength={15} pattern="\(\d{2}\) 9\d{4}-\d{4}" title="Celular com DDD: (21) 99999-9999" onChange={e => { e.target.value = mascaraTel(e.target.value); }} /></label>
-      <label>Data de nascimento<input name="data_nascimento" type="date" min={`${new Date().getFullYear() - 110}-01-01`} max={new Date().toISOString().slice(0, 10)} autoComplete="bday" required /></label>
+      <label>Data de nascimento<input name="data_nascimento" type="date" autoComplete="bday" required /></label>
       <label>E-mail<input name="email" type="email" placeholder="seu@email.com" autoComplete="email" required maxLength={120} onInput={e => e.target.setCustomValidity(emailValido(e.target.value) ? '' : 'Confira o e-mail, ex.: nome@email.com')} /></label>
       <fieldset className="modal__tipo">
         <legend>Tipo de consulta</legend>

@@ -22,3 +22,4 @@ generated*.webp
 generated*.png
 dist/
 node_modules/
+dist-ssr/

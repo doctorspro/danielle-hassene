@@ -6,7 +6,7 @@
   "description": "Landing page Dra. Danielle Hassene (React + Vite)",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node prerender.js",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -18,5 +18,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "vite": "^5.4.11"
   },
-  "engines": { "node": ">=18" }
+  "engines": {
+    "node": ">=18"
+  }
 }

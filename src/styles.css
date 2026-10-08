@@ -221,8 +221,9 @@ svg[data-lucide],svg.lucide{flex:none}
 .footer address strong{color:#fff;font-weight:500}
 
 /* ---------- Reveal ---------- */
-.reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
-.reveal.in{opacity:1;transform:none}
+/* animação só com JS ativo: sem JS (ou antes dele) o conteúdo continua visível */
+.js .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+.js .reveal.in{opacity:1;transform:none}
 
 /* ---------- Responsivo ---------- */
 @media (max-width:1280px){
