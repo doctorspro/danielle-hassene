@@ -37,3 +37,5 @@ qa-report.md
 qa-shots/
 generated*.webp
 generated*.png
+dist/
+node_modules/
