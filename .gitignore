@@ -11,25 +11,8 @@ w
 ceil(sectionCount
 *.woff
 seo-report*.json
-# imagens: só as usadas pela página
-images/*
-!images/favicon.png
-!images/hero-consultorio.jpg
-!images/hero-consultorio.webp
-!images/og-danielle-hassene.jpg
-!images/consultorio/
-images/consultorio/*
-!images/consultorio/aparador.jpg
-!images/consultorio/diva.jpg
-!images/consultorio/recepcao.jpg
-!images/v4/
-images/v4/*
-!images/v4/dra-recorte.png
-!images/daniellehassene.com.br/
-images/daniellehassene.com.br/*
-!images/daniellehassene.com.br/3eb4ff37b7f6ad7c.png
-!images/daniellehassene.com.br/b18998e7b8a153ab.jpg
-!images/daniellehassene.com.br/c4dfa7d21a1d6589.png
+# fontes das imagens (as usadas estão em public/images)
+images/
 # material interno de outras frentes (não é o site)
 TASK/
 atendimento-ia-base-de-conhecimento/

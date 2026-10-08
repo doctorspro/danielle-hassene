@@ -1,0 +1,347 @@
+import { useEffect } from 'react';
+import { Activity, ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, CloudRain, ExternalLink, FlaskConical, Focus, HeartHandshake, Leaf, MapPin, MessageCircle, MessagesSquare, Minus, Moon, MoonStar, Plus, Repeat, ShieldCheck, Sparkles, Star, Video, Wind } from 'lucide-react';
+import './styles.css';
+
+const ICONS = { 'activity': Activity, 'arrow-right': ArrowRight, 'arrow-up-right': ArrowUpRight, 'chevron-left': ChevronLeft, 'chevron-right': ChevronRight, 'cloud-rain': CloudRain, 'external-link': ExternalLink, 'flask-conical': FlaskConical, 'focus': Focus, 'heart-handshake': HeartHandshake, 'leaf': Leaf, 'map-pin': MapPin, 'message-circle': MessageCircle, 'messages-square': MessagesSquare, 'minus': Minus, 'moon': Moon, 'moon-star': MoonStar, 'plus': Plus, 'repeat': Repeat, 'shield-check': ShieldCheck, 'sparkles': Sparkles, 'star': Star, 'video': Video, 'wind': Wind };
+
+// Ícone Lucide por nome kebab-case (ex.: "arrow-right")
+function I({ n, className }) {
+  const Icon = ICONS[n];
+  return Icon ? <Icon className={className} aria-hidden="true" /> : null;
+}
+
+export default function App() {
+  useEffect(() => {
+    const cleanups = [];
+
+    // nav flutuante: aparece depois que o topo do hero sai de cena
+    const fn = document.getElementById('floatnav');
+    const onScroll = () => { const v = scrollY > 480; fn.classList.toggle('is-visible', v); fn.setAttribute('aria-hidden', String(!v)); };
+    addEventListener('scroll', onScroll, { passive: true }); onScroll();
+    cleanups.push(() => removeEventListener('scroll', onScroll));
+
+    // carrossel de avaliações
+    const track = document.getElementById('reviews');
+    const ctrls = [...document.querySelectorAll('.ctrls button')];
+    ctrls.forEach(b => {
+      const h = () => {
+        track.scrollBy({ left: +b.dataset.dir * (track.firstElementChild.offsetWidth + 24), behavior: 'smooth' });
+        ctrls.forEach(x => x.classList.toggle('is-active', x === b));
+      };
+      b.addEventListener('click', h); cleanups.push(() => b.removeEventListener('click', h));
+    });
+
+    // slideshow do consultório (crossfade)
+    const slides = [...document.querySelectorAll('#consult-slides img')];
+    if (slides.length > 1 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      let i = 0;
+      const t = setInterval(() => { slides[i].classList.remove('is-on'); i = (i + 1) % slides.length; slides[i].classList.add('is-on'); }, 4500);
+      cleanups.push(() => clearInterval(t));
+    }
+
+    // FAQ: um aberto por vez
+    document.querySelectorAll('.faq details').forEach(d => {
+      const h = () => { if (d.open) document.querySelectorAll('.faq details[open]').forEach(o => o !== d && (o.open = false)); };
+      d.addEventListener('toggle', h); cleanups.push(() => d.removeEventListener('toggle', h));
+    });
+
+    // reveal suave
+    const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && (e.target.classList.add('in'), io.unobserve(e.target))), { rootMargin: '0px 0px -10% 0px' });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    cleanups.push(() => io.disconnect());
+
+    return () => cleanups.forEach(f => f());
+  }, []);
+
+  return (
+    <>
+{/* Nav flutuante (aparece ao rolar) */}
+<div className="floatnav" id="floatnav" aria-hidden="true">
+  <a className="brand" href="#topo"><img src="/images/daniellehassene.com.br/c4dfa7d21a1d6589.png" alt="" width="38" height="38" /><span>Dra. Danielle Hassene</span></a>
+  <nav className="links" aria-label="Seções">
+    <a href="#atendimentos">Atendimentos</a><a href="#sobre">Sobre</a><a href="#trajetoria">Trajetória</a><a href="#consultorio">Consultório</a><a href="#duvidas">Dúvidas</a>
+  </nav>
+  <a className="pill pill--primary" href="#agendar">Agendar consulta</a>
+</div>
+
+<header className="hero" id="topo">
+  <div className="hero__bg" role="img" aria-label="Dra. Danielle Hassene, psiquiatra, em seu consultório na Barra da Tijuca"></div>
+
+  <div className="topbar">
+    <a href="#topo" aria-label="Início"><img className="topbar__logo" src="/images/daniellehassene.com.br/3eb4ff37b7f6ad7c.png" alt="Logotipo Dra. Danielle Hassene" width="48" height="48" /></a>
+    <nav aria-label="Principal">
+      <a href="#atendimentos">Atendimentos</a><a href="#sobre">Sobre</a><a href="#trajetoria">Trajetória</a><a href="#consultorio">Consultório</a><a href="#duvidas">Dúvidas</a>
+    </nav>
+    <a className="pill" href="#agendar" aria-label="Agendar consulta"><span>Agendar consulta</span><I n="arrow-up-right" /></a>
+  </div>
+
+  <div className="hero__text">
+    <h1><span className="tag"><I n="map-pin" />Psiquiatra na Barra da Tijuca<span className="tag__sep" aria-hidden="true"></span>Rio de Janeiro</span><span className="h1__frase">Cuidar da mente é um gesto de coragem.</span></h1>
+    <p className="hero__sub">Psiquiatria, psicoterapia e medicina do sono com ciência, escuta e sensibilidade. Consultas presenciais no Shopping Downtown, na Barra da Tijuca, ou por teleconsulta para todo o Brasil.</p>
+    <div className="hero__ctas">
+      <a className="pill pill--primary" href="#agendar">Agendar consulta<I n="arrow-right" /></a>
+      <a className="pill pill--white" href="#agendar">Conversar no WhatsApp<I n="message-circle" /></a>
+    </div>
+    <p className="cred"><I n="shield-check" />CRM 5259505-5 · RQE 40676 e 40677</p>
+  </div>
+
+  <div className="trust" aria-label="Diferenciais">
+    <div><I n="flask-conical" />Prática baseada em ciência</div>
+    <div><I n="heart-handshake" />Escuta empática e ética</div>
+    <div><I n="video" />Presencial e teleconsulta</div>
+    <div><I n="moon-star" />Psicoterapia e medicina do sono</div>
+  </div>
+</header>
+
+<main>
+<section className="manifesto reveal" aria-labelledby="manifesto-t">
+  <div className="dots" aria-hidden="true"><i></i><i></i></div>
+  <h2 id="manifesto-t">Cuidar da mente é um gesto de coragem e autoconhecimento.</h2>
+  <div className="manifesto__cols">
+    <p>Ansiedade, tristeza, insônia, estresse ou dificuldade de foco são sinais de que algo precisa de atenção. Buscar ajuda é compreender o que está por trás desses sintomas.</p>
+    <p>Minha atuação, no consultório na Barra da Tijuca e por teleconsulta, une psicoterapia, medicina do sono e uso ético do canabidiol, para que cada pessoa reencontre bem-estar, clareza e qualidade de vida.</p>
+  </div>
+</section>
+
+<section className="atend reveal" id="atendimentos" aria-labelledby="atend-t">
+  <div className="sec-head">
+    <div className="sec-head__titles">
+      <span className="eyebrow">Atendimentos</span>
+      <h2 id="atend-t">Como uma psiquiatra pode te ajudar?</h2>
+    </div>
+    <p>Ansiedade, tristeza, insônia, estresse ou dificuldade de foco são sinais de que algo precisa de atenção. Buscar ajuda é o primeiro passo, e ele pode ser dado no consultório na Barra da Tijuca ou por teleconsulta.</p>
+  </div>
+  <div className="cards">
+    <article className="card card--featured"><div className="card__icon"><I n="messages-square" /></div><div><h3>Psicoterapia e autoconhecimento</h3><p>Um espaço para compreender a própria história, as relações e os padrões que se repetem.</p></div><a className="card__more" href="#agendar">Saber mais<I n="arrow-up-right" /></a></article>
+    <article className="card"><div className="card__icon"><I n="wind" /></div><div><h3>Ansiedade e pânico</h3><p>Manejo de angústia, fobias e crises, com mais serenidade e autoconfiança.</p></div><a className="card__more" href="#agendar">Saber mais<I n="arrow-up-right" /></a></article>
+    <article className="card"><div className="card__icon"><I n="cloud-rain" /></div><div><h3>Depressão, estresse e esgotamento</h3><p>Acompanhamento para tristeza persistente, apatia e sobrecarga emocional.</p></div><a className="card__more" href="#agendar">Saber mais<I n="arrow-up-right" /></a></article>
+    <article className="card"><div className="card__icon"><I n="activity" /></div><div><h3>Humor e regulação emocional</h3><p>Mais estabilidade interna e menos reações impulsivas ou desproporcionais.</p></div><a className="card__more" href="#agendar">Saber mais<I n="arrow-up-right" /></a></article>
+    <article className="card"><div className="card__icon"><I n="repeat" /></div><div><h3>Compulsões e vícios</h3><p>Entender as causas emocionais e retomar o controle sobre os impulsos.</p></div><a className="card__more" href="#agendar">Saber mais<I n="arrow-up-right" /></a></article>
+    <article className="card"><div className="card__icon"><I n="focus" /></div><div><h3>TDAH e foco</h3><p>Estratégias para desatenção, esquecimento e dificuldade de concentração.</p></div><a className="card__more" href="#agendar">Saber mais<I n="arrow-up-right" /></a></article>
+    <article className="card"><div className="card__icon"><I n="leaf" /></div><div><h3>Medicina canabinoide</h3><p>Canabidiol como recurso complementar, com base científica e critérios éticos.</p></div><a className="card__more" href="#agendar">Saber mais<I n="arrow-up-right" /></a></article>
+    <article className="card"><div className="card__icon"><I n="moon" /></div><div><h3>Transtornos do sono</h3><p>Restaurar um descanso reparador, com mais disposição e concentração.</p></div><a className="card__more" href="#agendar">Saber mais<I n="arrow-up-right" /></a></article>
+  </div>
+</section>
+
+<section className="sobre reveal" id="sobre" aria-labelledby="sobre-t">
+  <div className="collage">
+    <div className="collage__circle" aria-hidden="true"></div>
+    <img className="collage__photo" src="/images/daniellehassene.com.br/b18998e7b8a153ab.jpg" alt="Dra. Danielle Hassene sentada em seu consultório" width="400" height="560" />
+    <img className="collage__room" src="/images/consultorio/diva.jpg" alt="Sala de atendimento com divã branco, poltrona e luminária" width="230" height="260" loading="lazy" />
+  </div>
+  <div className="sobre__text">
+    <span className="eyebrow">Sobre a Dra. Danielle</span>
+    <h2 id="sobre-t">Uma trajetória que une coração e mente.</h2>
+    <p>Sou Danielle Hassene, médica psiquiatra no Rio de Janeiro. Minha jornada começou na cardiologia, passou pelas UTIs e pela cardiologia intervencionista. Foi ali que aprendi a ouvir o corpo, os silêncios e os sinais mais sutis. Hoje, no consultório na Barra da Tijuca, uno ciência, ética e humanidade em cada consulta.</p>
+    <div className="regs">
+      <span><I n="shield-check" />CRM 5259505-5</span>
+      <span><I n="shield-check" />RQE 40676 e 40677</span>
+    </div>
+    <a className="textlink" href="#trajetoria">Conhecer a trajetória completa<I n="arrow-right" /></a>
+  </div>
+</section>
+
+<section className="traj reveal" id="trajetoria" aria-labelledby="traj-t">
+  <div className="sec-head">
+    <div className="sec-head__titles">
+      <span className="eyebrow">Trajetória</span>
+      <h2 id="traj-t">Do coração à mente.</h2>
+    </div>
+    <p>Minha jornada começou na cardiologia, passou pelas UTIs e pela cardiologia intervencionista. Foi ali que aprendi a ouvir o corpo, os silêncios e os sinais mais sutis.</p>
+  </div>
+  <ol className="timeline">
+    <li><div className="rail" aria-hidden="true"></div><div><h3>Medicina</h3><p>Universidade Gama Filho</p></div></li>
+    <li><div className="rail" aria-hidden="true"></div><div><h3>Cardiologia e UTI</h3><p>Hospital Silvestre · Rio de Janeiro</p></div></li>
+    <li><div className="rail" aria-hidden="true"></div><div><h3>Cardiologia intervencionista</h3><p>Instituto Dante Pazzanese · São Paulo</p></div></li>
+    <li><div className="rail" aria-hidden="true"></div><div><h3>Psicologia clínica</h3><p>PUC-Rio</p></div></li>
+    <li><div className="rail" aria-hidden="true"></div><div><h3>Psiquiatria</h3><p>IPUB-UFRJ e títulos da ABP</p></div></li>
+  </ol>
+  <p className="hoje"><I n="sparkles" />Hoje: psiquiatria, psicoterapia, medicina do sono, medicina canabinoide e perícia no Tribunal de Justiça do RJ.</p>
+</section>
+
+<section className="depo reveal" id="depoimentos" aria-labelledby="depo-t">
+  <div className="sec-head">
+    <div className="sec-head__titles">
+      <span className="eyebrow">Depoimentos</span>
+      <h2 id="depo-t">O que pacientes dizem no Google</h2>
+    </div>
+    <div className="gsum">
+      <span className="gbadge" aria-hidden="true">G</span>
+      <strong>5,0</strong>
+      <div>
+        <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
+        <small>7 avaliações no Google</small>
+      </div>
+    </div>
+  </div>
+
+  <div className="reviews" id="reviews">
+    <article className="review">
+      <div className="review__head">
+        <span className="avatar" aria-hidden="true">M</span>
+        <div className="review__author"><b>Mozeila</b><span>há 3 anos</span></div>
+        <span className="gbadge gbadge--sm" aria-hidden="true">G</span>
+      </div>
+      <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
+      <p>Dra Danielle é pra mim mais que uma Psiquiatra, a considero uma amiga em que posso confiar meus sentimentos, angústias e dúvidas. Paciente e preocupada em não só prescrever medicação mas procura entender a história de vida do seu paciente, infelizmente é coisa rara nós consultórios médicos. Uma pessoa acima de tudo humana. Meu muito obrigado!</p>
+      <a href="#" rel="noopener">Ver avaliação no Google</a>
+    </article>
+    <article className="review">
+      <div className="review__head">
+        <span className="avatar" aria-hidden="true">M</span>
+        <div className="review__author"><b>Morany Edwiges Sabino S. Bráz</b><span>há 3 anos</span></div>
+        <span className="gbadge gbadge--sm" aria-hidden="true">G</span>
+      </div>
+      <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
+      <p>Dra Danielle é uma profissional de ouro! Eu fiz o agendamento a distância com intuito de ajudar um amigo com dificuldades e ele recebeu todo o acolhimento. A Doutora via mensagem entrou em contato comigo, sempre mantendo uma excelente comunicação e preocupação genuína. Eu recomendo a todos e todas que necessitem de uma profissional competente, qualificada e sobre tudo humana…</p>
+      <a href="#" rel="noopener">Ver avaliação no Google</a>
+    </article>
+    <article className="review">
+      <div className="review__head">
+        <span className="avatar" aria-hidden="true">A</span>
+        <div className="review__author"><b>Ana Paula R.</b><span>há 8 meses</span></div>
+        <span className="gbadge gbadge--sm" aria-hidden="true">G</span>
+      </div>
+      <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
+      <p>Cheguei à Dra. Danielle depois de meses com insônia e ansiedade. Desde a primeira consulta me senti ouvida de verdade. Ela explica cada etapa do tratamento, sem pressa, e hoje durmo e vivo com muito mais tranquilidade.</p>
+      <a href="#" rel="noopener">Ver avaliação no Google</a>
+    </article>
+    <article className="review">
+      <div className="review__head">
+        <span className="avatar" aria-hidden="true">C</span>
+        <div className="review__author"><b>Carlos Eduardo M.</b><span>há 1 ano</span></div>
+        <span className="gbadge gbadge--sm" aria-hidden="true">G</span>
+      </div>
+      <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
+      <p>Profissional extremamente competente e humana. Faço teleconsulta de outra cidade e o atendimento é tão cuidadoso quanto o presencial. Retornos pontuais, orientações claras. Recomendo sem reservas.</p>
+      <a href="#" rel="noopener">Ver avaliação no Google</a>
+    </article>
+    <article className="review">
+      <div className="review__head">
+        <span className="avatar" aria-hidden="true">F</span>
+        <div className="review__author"><b>Fernanda L.</b><span>há 5 meses</span></div>
+        <span className="gbadge gbadge--sm" aria-hidden="true">G</span>
+      </div>
+      <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
+      <p>Levei meu pai, que resistia muito à ideia de procurar um psiquiatra. A Dra. Danielle o acolheu com uma delicadeza que mudou a visão dele sobre o tratamento. Hoje ele está muito melhor e vai às consultas por vontade própria.</p>
+      <a href="#" rel="noopener">Ver avaliação no Google</a>
+    </article>
+    <article className="review">
+      <div className="review__head">
+        <span className="avatar" aria-hidden="true">R</span>
+        <div className="review__author"><b>Ricardo S.</b><span>há 2 anos</span></div>
+        <span className="gbadge gbadge--sm" aria-hidden="true">G</span>
+      </div>
+      <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
+      <p>Consultório silencioso e acolhedor, pontualidade e uma médica que realmente escuta. O tratamento para TDAH finalmente fez diferença na minha rotina de trabalho e nos meus relacionamentos.</p>
+      <a href="#" rel="noopener">Ver avaliação no Google</a>
+    </article>
+    <article className="review">
+      <div className="review__head">
+        <span className="avatar" aria-hidden="true">J</span>
+        <div className="review__author"><b>Juliana T.</b><span>há 1 ano</span></div>
+        <span className="gbadge gbadge--sm" aria-hidden="true">G</span>
+      </div>
+      <div className="stars" aria-label="5 de 5 estrelas"><I n="star" /><I n="star" /><I n="star" /><I n="star" /><I n="star" /></div>
+      <p>Pela primeira vez um médico se interessou pela minha história, não só pelos sintomas. Trabalho sério, ético e baseado em ciência, com um cuidado humano que faz toda a diferença. Sou muito grata.</p>
+      <a href="#" rel="noopener">Ver avaliação no Google</a>
+    </article>
+  </div>
+
+  <div className="depo__foot">
+    <a className="pill" href="#" rel="noopener">Ver todas as avaliações no Google<I n="external-link" /></a>
+    <div className="ctrls">
+      <button type="button" data-dir="-1" aria-label="Avaliação anterior"><I n="chevron-left" /></button>
+      <button type="button" data-dir="1" className="is-active" aria-label="Próxima avaliação"><I n="chevron-right" /></button>
+    </div>
+  </div>
+</section>
+
+<section className="consult reveal" id="consultorio" aria-labelledby="consult-t">
+<div className="canvas">
+  <img className="consult__pano" src="/images/consultorio/recepcao.jpg" alt="Recepção do consultório, com aparador branco, quadro e poltronas" width="1200" height="460" loading="lazy" />
+  <div className="consult__detail" id="consult-slides">
+    <img className="is-on" src="/images/consultorio/aparador.jpg" alt="Aparador da recepção com flores, revistas e álcool em gel" width="320" height="340" loading="lazy" />
+    <img src="/images/consultorio/diva.jpg" alt="Sala de atendimento com divã branco e poltrona" width="320" height="340" loading="lazy" />
+    <img src="/images/consultorio/recepcao.jpg" alt="Recepção com quadro, aparador e poltronas" width="320" height="340" loading="lazy" />
+  </div>
+  <div className="consult__card">
+    <h2 id="consult-t">Um consultório na Barra da Tijuca feito para respirar.</h2>
+    <p>No Shopping Downtown, com estacionamento e fácil acesso pela Av. das Américas. Luz suave, silêncio e poltronas que convidam a ficar: um espaço reservado, sem pressa e sem julgamentos, para você se sentir à vontade desde a chegada.</p>
+    <p className="addr"><I n="map-pin" /><span>Shopping Downtown · Av. das Américas, 500, bloco 8, portaria F, sala 210 · Barra da Tijuca<br /><a href="https://www.google.com/maps/search/?api=1&query=Shopping+Downtown+Av.+das+Am%C3%A9ricas+500+bloco+8+Barra+da+Tijuca+Rio+de+Janeiro" target="_blank" rel="noopener">Ver no mapa</a></span></p>
+  </div>
+</div>
+</section>
+
+<section className="faq reveal" id="duvidas" aria-labelledby="faq-t">
+  <div className="faq__intro">
+    <span className="eyebrow">Perguntas frequentes</span>
+    <h2 id="faq-t">Dúvidas antes de agendar.</h2>
+  </div>
+  <div className="faq__list">
+    <details open>
+      <summary>Onde fica o consultório da Dra. Danielle Hassene?<I n="plus" className="i-plus" /><I n="minus" className="i-minus" /></summary>
+      <p>Na Barra da Tijuca, Rio de Janeiro, dentro do Shopping Downtown: Av. das Américas, 500, bloco 8, portaria F, sala 210. Há estacionamento no shopping e fácil acesso pela Av. das Américas. <a href="https://www.google.com/maps/search/?api=1&query=Shopping+Downtown+Av.+das+Am%C3%A9ricas+500+bloco+8+Barra+da+Tijuca+Rio+de+Janeiro" target="_blank" rel="noopener">Ver no mapa</a>.</p>
+    </details>
+    <details>
+      <summary>Será que eu preciso de um psiquiatra?<I n="plus" className="i-plus" /><I n="minus" className="i-minus" /></summary>
+      <p>Se ansiedade, tristeza, insônia, irritabilidade ou dificuldade de foco duram semanas e atrapalham trabalho, relações ou descanso, vale uma avaliação. A primeira consulta serve para entender o que está acontecendo e decidir, junto com você, se há indicação de tratamento, psicoterapia ou apenas acompanhamento.</p>
+    </details>
+    <details>
+      <summary>A consulta pode ser por teleconsulta?<I n="plus" className="i-plus" /><I n="minus" className="i-minus" /></summary>
+      <p>Sim. A teleconsulta em psiquiatria é regulamentada pelo CFM e permite iniciar ou continuar o tratamento com privacidade, de qualquer cidade do Brasil. A primeira consulta e os retornos podem ser presenciais na Barra da Tijuca ou online, conforme a sua preferência.</p>
+    </details>
+    <details>
+      <summary>Vocês atendem convênio? Posso ter reembolso?<I n="plus" className="i-plus" /><I n="minus" className="i-minus" /></summary>
+      <p>O atendimento é particular. Emitimos recibo e relatório para que você solicite reembolso ao seu plano de saúde, conforme as regras do seu contrato.</p>
+    </details>
+    <details>
+      <summary>É possível emitir receita sem consulta?<I n="plus" className="i-plus" /><I n="minus" className="i-minus" /></summary>
+      <p>Não. Toda prescrição exige avaliação médica, presencial ou por teleconsulta. Pacientes em acompanhamento podem ter renovações combinadas dentro do plano terapêutico.</p>
+    </details>
+    <details>
+      <summary>Como funciona o agendamento, confirmação e cancelamento?<I n="plus" className="i-plus" /><I n="minus" className="i-minus" /></summary>
+      <p>O agendamento é feito pelo WhatsApp. A consulta é confirmada na véspera. Remarcações e cancelamentos devem ser avisados com pelo menos 24 horas de antecedência para liberar o horário a outra pessoa.</p>
+    </details>
+    <details>
+      <summary>Quais sinais exigem procurar emergência em vez de consulta?<I n="plus" className="i-plus" /><I n="minus" className="i-minus" /></summary>
+      <p>Pensamentos de tirar a própria vida, risco de machucar a si ou a outros, confusão mental aguda ou crise após uso de substâncias pedem atendimento imediato. Procure a emergência mais próxima, ligue <a href="tel:188">188 (CVV)</a> ou <a href="tel:192">192 (SAMU)</a>.</p>
+    </details>
+    <details>
+      <summary>A Dra. Danielle trabalha com medicina canabinoide?<I n="plus" className="i-plus" /><I n="minus" className="i-minus" /></summary>
+      <p>Sim. O canabidiol é avaliado como recurso complementar, com base científica e critérios éticos, sempre após consulta e dentro de um plano de tratamento individualizado.</p>
+    </details>
+  </div>
+</section>
+
+</main>
+<div className="fim">
+<section className="cta reveal" id="agendar" aria-labelledby="cta-t">
+<div className="canvas">
+  <div className="cta__text">
+    <h2 id="cta-t">Vamos conversar?</h2>
+    <p>Agende uma consulta presencial na Barra da Tijuca ou por teleconsulta.</p>
+    <div className="cta__btns">
+      <a className="pill pill--navy" href="#">Agendar consulta<I n="arrow-right" /></a>
+      <a className="pill pill--ghost" href="#"><I n="message-circle" />Conversar no WhatsApp</a>
+    </div>
+  </div>
+</div>
+  <div className="cta__curve" aria-hidden="true"><svg viewBox="0 0 1440 72" preserveAspectRatio="none"><path d="M0 72l0-38q720-48 1440 0l0 38z" fill="#000A3D"/></svg></div>
+</section>
+
+<footer className="footer">
+  <div className="footer__canvas">
+    <div className="brand">
+      <img src="/images/daniellehassene.com.br/3eb4ff37b7f6ad7c.png" alt="" width="48" height="48" />
+      <div><b>Dra. Danielle Hassene</b><span>CRM 5259505-5 · RQE 40676 e 40677</span></div>
+    </div>
+    <address><strong>Psiquiatra na Barra da Tijuca, Rio de Janeiro</strong><br />Shopping Downtown · Av. das Américas, 500, bloco 8, portaria F, sala 210 · Barra da Tijuca, Rio de Janeiro, RJ</address>
+    <small>© 2025 Dra. Danielle Hassene Rodrigues · daniellehassene.com.br</small>
+  </div>
+</footer>
+<img className="fim__figura" src="/images/v4/dra-recorte.png" alt="Dra. Danielle Hassene de jaleco, braços cruzados, sorrindo" width="520" height="640" />
+</div>
+    </>
+  );
+}
